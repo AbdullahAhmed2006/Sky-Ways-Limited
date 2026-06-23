@@ -1,0 +1,129 @@
+# ==========================================
+# Python / Django Core Ignored Files
+# ==========================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ==========================================
+# Virtual Environments (HIDE YOUR DEVICE INFO)
+# ==========================================
+# Virtual environment folders where packages are installed locally
+venv/
+env/
+.env/
+.venv/
+env.bak/
+venv.bak/
+Pipfile.lock
+
+# ==========================================
+# Database and Sensitive Info (CRITICAL)
+# ==========================================
+# Ignore the local SQLite database which may contain real user data or tests
+db.sqlite3
+db.sqlite3-journal
+
+# Ignore environment variables and secrets files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+secrets.json
+
+# ==========================================
+# Django Specific Uploads & Static Assets
+# ==========================================
+# Ignore collected static files (generated via collectstatic)
+staticfiles/
+static_root/
+
+# Ignore user-uploaded media files to prevent PII leaks
+media/
+uploads/
+
+# ==========================================
+# IDE / Editor Folders (Hide your setup)
+# ==========================================
+# VS Code
+.vscode/
+*.code-workspace
+.history/
+
+# PyCharm / IntelliJ
+.idea/
+*.iml
+*.iws
+
+# Gemini / Agentic IDEs
+.gemini/
+
+# Sublime / Atom / Other editors
+*.swp
+*~
+.directory
+
+# ==========================================
+# OS Generated Files (Windows/Mac/Linux)
+# ==========================================
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+
+# ==========================================
+# Logs and Caches
+# ==========================================
+*.log
+logs/
+celerybeat-schedule
+celerybeat.pid
+*.pid
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/

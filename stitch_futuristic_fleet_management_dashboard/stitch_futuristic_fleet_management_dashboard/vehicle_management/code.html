@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SkyWays - Vehicles</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#dbe3f4",
+                        "on-tertiary": "#472a00",
+                        "inverse-surface": "#dbe3f4",
+                        "on-surface": "#dbe3f4",
+                        "surface-container-lowest": "#070e1a",
+                        "outline-variant": "#3d494c",
+                        "on-surface-variant": "#bcc9cd",
+                        "secondary-container": "#00a572",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-variant": "#2d3542",
+                        "surface-container-low": "#141c28",
+                        "surface-container": "#18202c",
+                        "on-primary-fixed": "#001f26",
+                        "surface-bright": "#323947",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-secondary-fixed-variant": "#005236",
+                        "outline": "#869397",
+                        "tertiary": "#ffb95f",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-primary": "#003640",
+                        "background": "#0c1420",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-secondary-fixed": "#002113",
+                        "surface-tint": "#4cd7f6",
+                        "on-primary-fixed-variant": "#004e5c",
+                        "on-error-container": "#ffdad6",
+                        "inverse-primary": "#00687a",
+                        "secondary-fixed": "#6ffbbe",
+                        "primary-fixed": "#acedff",
+                        "primary": "#4cd7f6",
+                        "on-tertiary-container": "#563400",
+                        "primary-container": "#06b6d4",
+                        "surface-container-highest": "#2d3542",
+                        "primary-fixed-dim": "#4cd7f6",
+                        "on-secondary-container": "#00311f",
+                        "surface": "#0c1420",
+                        "tertiary-container": "#e79400",
+                        "secondary": "#4edea3",
+                        "surface-dim": "#0c1420",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005",
+                        "on-secondary": "#003824",
+                        "surface-container-high": "#232a37",
+                        "on-primary-container": "#00424f",
+                        "inverse-on-surface": "#29313e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "0.5rem",
+                        "container-margin": "2rem",
+                        "card-padding": "1.25rem",
+                        "sidebar-width": "280px",
+                        "gutter": "1.5rem",
+                        "stack-md": "1rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "metric-value": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "metric-value": ["28px", { "lineHeight": "34px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 15px rgba(76, 215, 246, 0.3);
+        }
+        .neon-btn {
+            background: linear-gradient(90deg, #00687a, #004e5c);
+            border-top: 1px solid white;
+            transition: all 0.3s ease;
+        }
+        .neon-btn:hover {
+            box-shadow: 0 0 10px rgba(76, 215, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-lg min-h-screen flex overflow-x-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex fixed left-0 top-0 bottom-0 z-50 flex-col py-8 docked left-0 h-full w-[280px] bg-surface border-r border-outline-variant/20 backdrop-blur-3xl">
+<div class="px-6 mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl" data-weight="fill">shield</span>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-on-surface">SkyWays</h1>
+<p class="text-label-caps font-label-caps text-on-surface-variant">Fleet Control</p>
+</div>
+</div>
+<ul class="flex flex-col gap-2 flex-grow">
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-6 py-4 transition-colors hover:bg-surface-container-highest/10" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 bg-gradient-to-r from-primary/10 to-transparent text-primary font-bold border-l-4 border-primary px-6 py-4 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="directions_bus" data-weight="fill">directions_bus</span>
+<span class="font-body-md text-body-md">Vehicles</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-6 py-4 transition-colors hover:bg-surface-container-highest/10" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-body-md text-body-md">Drivers</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-6 py-4 transition-colors hover:bg-surface-container-highest/10" href="#">
+<span class="material-symbols-outlined" data-icon="route">route</span>
+<span class="font-body-md text-body-md">Routes &amp; Trips</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-6 py-4 transition-colors hover:bg-surface-container-highest/10" href="#">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-body-md text-body-md">Booking Portal</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto px-6">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface py-4 transition-colors hover:bg-surface-container-highest/10" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col md:ml-[280px] min-h-screen">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-container-margin py-stack-md sticky top-0 z-40 backdrop-blur-md bg-transparent">
+<div>
+<h2 class="text-headline-lg font-headline-lg font-bold text-on-surface hidden md:block">Vehicles</h2>
+<h2 class="text-headline-lg-mobile font-headline-lg-mobile font-bold text-on-surface md:hidden">Vehicles</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-variant/20 rounded-full p-2 transition-all focus:ring-2 focus:ring-primary/50">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img alt="Sofia Ramirez" class="w-full h-full object-cover" data-alt="A professional headshot of a female fleet manager in a modern command center, softly lit with cool blue and cyan ambient lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4VBeV75285WxaD4oAWfAZzo7E4MUHZ7HA0oxTxmJwGlGdddi1_1IgDnqEF7mWKMqoFXhEBITyigbVkTYLLT4TeXgC7gnykQCGU4WgN_FDN2sM05DjY4n8xuG5bkah9lkP3nUOvJGYIftswwcrygyNPhohRvF5TwaaG_vYRiBCWReXqouR7RaVL9UYi5zOH9w06s-PzY3co9IWUU_8V-B-P9sBPX7OE7kgd1s58lFWwsUP5d6qzbL2AdvJixt3KYkvNivWV3ItixA"/>
+</div>
+</div>
+</header>
+<!-- Viewport Content -->
+<div class="p-container-margin flex-1">
+<div class="flex justify-between items-end mb-8">
+<div>
+<p class="text-body-md font-body-md text-on-surface-variant">Manage your fleet inventory, track live status, and monitor vehicle health.</p>
+</div>
+<button class="neon-btn text-white px-6 py-3 rounded-lg flex items-center gap-2 font-headline-md text-body-md">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                    Add New Vehicle
+                </button>
+</div>
+<!-- Vehicle Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1: In Transit -->
+<div class="glass-card rounded-xl p-card-padding flex flex-col gap-4 glow-hover transition-all group">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-label-caps font-label-caps text-primary tracking-wider">VH-1042</span>
+<h3 class="text-headline-md font-headline-md text-on-surface mt-1">Mercedes Citaro G</h3>
+</div>
+<div class="bg-secondary/10 text-secondary px-3 py-1 rounded-full flex items-center gap-2 border border-secondary/20 shadow-[0_0_10px_rgba(78,222,163,0.2)]">
+<div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
+<span class="text-label-caps font-label-caps">In Transit</span>
+</div>
+</div>
+<div class="h-32 w-full bg-surface-container-low rounded-lg relative overflow-hidden border border-outline-variant/30 flex items-center justify-center">
+<img alt="Bus" class="object-cover w-full h-full opacity-60 mix-blend-luminosity group-hover:opacity-100 transition-opacity" data-alt="An isometric, high-tech 3D render of a modern articulated city bus, stylized in a sleek, futuristic metallic finish against a dark cyber-modern background with subtle cyan lighting accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB23jpkcBEjtDd-cdfJwha_Xuy5LZmvWq5ymX-IetZc4lLk1JT-G05nUlJjrlQuThCGWstOkasA1CIMd_jqEWb61wWlO88qoPAdVk03zMkH_SSgBIbCeFYg1mbg9-_bY9Q1gUddTMX62tp8CnwSTiObiTjmhFTXQ07VzmZDpH7qpyTjHJ89om0HH6WJq3goSX_ptsGEWCSAcmO4nEC7khoy_6QC7d71sfMpOnxgK7haOMDTwAMq-inX36Xln49ng5UdezaFvseaWec"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Capacity</span>
+<span class="text-body-lg font-body-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="group">group</span> 84 pax
+                            </span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Route</span>
+<span class="text-body-lg font-body-lg text-on-surface">R-104 (Downtown)</span>
+</div>
+</div>
+<div class="mt-2">
+<div class="flex justify-between items-center mb-1">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Energy/Fuel</span>
+<span class="text-label-caps font-label-caps text-primary">78%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary-container to-primary w-[78%] shadow-[0_0_8px_rgba(76,215,246,0.5)]"></div>
+</div>
+</div>
+</div>
+<!-- Card 2: Maintenance -->
+<div class="glass-card rounded-xl p-card-padding flex flex-col gap-4 glow-hover transition-all group border-l-2 border-l-tertiary">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-label-caps font-label-caps text-primary tracking-wider">VH-2019</span>
+<h3 class="text-headline-md font-headline-md text-on-surface mt-1">Volvo 7900 Elec</h3>
+</div>
+<div class="bg-tertiary/10 text-tertiary px-3 py-1 rounded-full flex items-center gap-2 border border-tertiary/20 shadow-[0_0_10px_rgba(255,185,95,0.2)]">
+<span class="material-symbols-outlined text-[14px]" data-icon="build">build</span>
+<span class="text-label-caps font-label-caps">Maintenance</span>
+</div>
+</div>
+<div class="h-32 w-full bg-surface-container-low rounded-lg relative overflow-hidden border border-outline-variant/30 flex items-center justify-center">
+<img alt="Bus" class="object-cover w-full h-full opacity-60 mix-blend-luminosity group-hover:opacity-100 transition-opacity" data-alt="An isometric, high-tech 3D render of a modern electric city bus in a maintenance bay, stylized with a sleek dark aesthetic, illuminated by ambient orange and gold holographic diagnostic displays." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWzu5jks871pkCN9cO5RZoU0Nb8Beqi7f5gJxit8wEnoQcjEGFJr0bz1H1LRnMN-nCprBMJDl9pjtw6hX6jRqaDo4Nwuu7xXYzDEVknTV6pH2FQUhcttwZDKqyUifLdnf0Oj3txPZHBfaWIh7i1a-3vZtiG8y7H3UPqb0a_iiR8qeCzQH-PQqCmdBtEaUKPAeO99kSGu-1F1W2m5nBAo1yW7_QR7oPdVuT65AjR_kdaOewbo9LkToCHAUdqI4DTos1KOIikkoluIs"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Capacity</span>
+<span class="text-body-lg font-body-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="group">group</span> 65 pax
+                            </span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Est. Release</span>
+<span class="text-body-lg font-body-lg text-on-surface">14:00 (Today)</span>
+</div>
+</div>
+<div class="mt-2">
+<div class="flex justify-between items-center mb-1">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Battery Status</span>
+<span class="text-label-caps font-label-caps text-tertiary">Charging (42%)</span>
+</div>
+<div class="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-tertiary-container to-tertiary w-[42%] shadow-[0_0_8px_rgba(255,185,95,0.5)]"></div>
+</div>
+</div>
+</div>
+<!-- Card 3: Available -->
+<div class="glass-card rounded-xl p-card-padding flex flex-col gap-4 glow-hover transition-all group">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-label-caps font-label-caps text-primary tracking-wider">VH-0899</span>
+<h3 class="text-headline-md font-headline-md text-on-surface mt-1">BYD K9</h3>
+</div>
+<div class="bg-primary/10 text-primary px-3 py-1 rounded-full flex items-center gap-2 border border-primary/20">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+<span class="text-label-caps font-label-caps">Available</span>
+</div>
+</div>
+<div class="h-32 w-full bg-surface-container-low rounded-lg relative overflow-hidden border border-outline-variant/30 flex items-center justify-center">
+<img alt="Bus" class="object-cover w-full h-full opacity-60 mix-blend-luminosity group-hover:opacity-100 transition-opacity" data-alt="An isometric, high-tech 3D render of a futuristic electric commuter bus, stylized in dark cyber-modern metallic tones with soft cyan and blue ambient glowing edges, parked in a sleek depot." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGlQaaefoTFBcD9krTgj2PS1ayEnbal7PY7SNSnISl6ewmdVXB17EbJiFvrK4o5qfErZ0PaB0OB8Cz4XC9-gpJgFwEx3gL07xiIuDbFzqcBW80E43pRnQL8WkCQ5OKfSAR9yV3NXLQEJuT9BaiyekOVrLnqvnxSn8z_P0hMm5KsozBpnIyiGCcCqXFLQaH7WgqAO2BUVsD8zkPIoiHrsg7OPiDiz_GPD6B7zZZxfhYXBArhqfTzyA1pP3OFtXzA8MA_QJCSLw19kk"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Capacity</span>
+<span class="text-body-lg font-body-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="group">group</span> 70 pax
+                            </span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Location</span>
+<span class="text-body-lg font-body-lg text-on-surface">Depot Alpha</span>
+</div>
+</div>
+<div class="mt-2">
+<div class="flex justify-between items-center mb-1">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Energy/Fuel</span>
+<span class="text-label-caps font-label-caps text-primary">100%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary-container to-primary w-full shadow-[0_0_8px_rgba(76,215,246,0.5)]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

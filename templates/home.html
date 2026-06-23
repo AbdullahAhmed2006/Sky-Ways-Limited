@@ -1,0 +1,1463 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>SkyWays - Fleet Command Control</title>
+    
+    <!-- Tailwind CSS CDN with forms/container-queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Google Fonts: Inter, JetBrains Mono, Material Symbols Outlined -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+    
+    <!-- Link Global App Stylesheet -->
+    <link rel="stylesheet" href="{% static 'styles.css' %}?v=1.0.5"/>
+
+    <!-- Tailwind Config Overrides matching Cyber-Fleet Velocity Design System -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#dbe3f4",
+                        "on-tertiary": "#472a00",
+                        "inverse-surface": "#dbe3f4",
+                        "on-surface": "#dbe3f4",
+                        "surface-container-lowest": "#070e1a",
+                        "outline-variant": "#3d494c",
+                        "on-surface-variant": "#bcc9cd",
+                        "secondary-container": "#00a572",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-variant": "#2d3542",
+                        "surface-container-low": "#141c28",
+                        "surface-container": "#18202c",
+                        "on-primary-fixed": "#001f26",
+                        "surface-bright": "#323947",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-secondary-fixed-variant": "#005236",
+                        "outline": "#869397",
+                        "tertiary": "#ffb95f",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-primary": "#003640",
+                        "background": "#0c1420",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-secondary-fixed": "#002113",
+                        "surface-tint": "#4cd7f6",
+                        "on-primary-fixed-variant": "#004e5c",
+                        "on-error-container": "#ffdad6",
+                        "inverse-primary": "#00687a",
+                        "secondary-fixed": "#6ffbbe",
+                        "primary-fixed": "#acedff",
+                        "primary": "#4cd7f6",
+                        "on-tertiary-container": "#563400",
+                        "primary-container": "#06b6d4",
+                        "surface-container-highest": "#2d3542",
+                        "primary-fixed-dim": "#4cd7f6",
+                        "on-secondary-container": "#00311f",
+                        "surface": "#0c1420",
+                        "tertiary-container": "#e79400",
+                        "secondary": "#4edea3",
+                        "surface-dim": "#0c1420",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005",
+                        "on-secondary": "#003824",
+                        "surface-container-high": "#232a37",
+                        "on-primary-container": "#00424f",
+                        "inverse-on-surface": "#29313e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "0.5rem",
+                        "container-margin": "2rem",
+                        "card-padding": "1.25rem",
+                        "sidebar-width": "280px",
+                        "gutter": "1.5rem",
+                        "stack-md": "1rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "metric-value": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "metric-value": ["28px", { "lineHeight": "34px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden min-h-screen flex bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=2852&q=80')] bg-cover bg-center bg-no-repeat bg-fixed relative">
+
+    <!-- Screen Readability Backdrop Overlay -->
+    <div class="absolute inset-0 bg-background/85 backdrop-blur-[40px] z-0 pointer-events-none"></div>
+
+    <!-- Ambient Background Glows -->
+    <div class="fixed top-0 left-1/4 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+    <div class="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- Shared SideNavBar Navigation Component -->
+    <aside class="fixed left-0 top-0 bottom-0 z-50 flex flex-col py-8 bg-surface dark:bg-surface border-r border-outline-variant/20 backdrop-blur-3xl h-full w-[280px]">
+        <!-- Brand Header -->
+        <div class="px-6 mb-8 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-[0_0_15px_rgba(76,215,246,0.3)]">
+                <span class="material-symbols-outlined text-white font-bold">flight_takeoff</span>
+            </div>
+            <div>
+                <h1 class="text-headline-md font-bold text-on-surface">SkyWays</h1>
+                <p class="text-label-caps text-on-surface-variant uppercase tracking-widest mt-1">Fleet Control</p>
+            </div>
+        </div>
+        <div class="px-6 mb-4">
+            <span class="text-label-caps text-outline uppercase tracking-widest">Operations</span>
+        </div>
+        <!-- Navigation Links -->
+        <nav class="flex-1 flex flex-col gap-2 px-3">
+            <a id="nav-dashboard" class="flex items-center gap-3 bg-gradient-to-r from-primary/10 to-transparent text-primary font-bold border-l-4 border-primary px-4 py-3 rounded-r-lg" href="#dashboard">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="text-body-md">Dashboard</span>
+            </a>
+            <a id="nav-vehicles" class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/10 px-4 py-3 border-l-4 border-transparent rounded-r-lg transition-colors" href="#vehicles">
+                <span class="material-symbols-outlined">directions_bus</span>
+                <span class="text-body-md">Vehicles</span>
+            </a>
+            <a id="nav-drivers" class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/10 px-4 py-3 border-l-4 border-transparent rounded-r-lg transition-colors" href="#drivers">
+                <span class="material-symbols-outlined">person</span>
+                <span class="text-body-md">Drivers</span>
+            </a>
+            <a id="nav-routes" class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/10 px-4 py-3 border-l-4 border-transparent rounded-r-lg transition-colors" href="#routes">
+                <span class="material-symbols-outlined">route</span>
+                <span class="text-body-md">Routes &amp; Trips</span>
+            </a>
+            <a id="nav-booking" class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/10 px-4 py-3 border-l-4 border-transparent rounded-r-lg transition-colors" href="#booking">
+                <span class="material-symbols-outlined">confirmation_number</span>
+                <span class="text-body-md">Booking Portal</span>
+            </a>
+            <a id="nav-tickets" class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/10 px-4 py-3 border-l-4 border-transparent rounded-r-lg transition-colors border-l-4 border-transparent" href="#tickets">
+                <span class="material-symbols-outlined">receipt_long</span>
+                <span class="text-body-md">My Tickets</span>
+            </a>
+            <a id="nav-analytics" class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/10 px-4 py-3 border-l-4 border-transparent rounded-r-lg transition-colors border-l-4 border-transparent" href="#analytics">
+                <span class="material-symbols-outlined">analytics</span>
+                <span class="text-body-md">Analytics &amp; Reports</span>
+            </a>
+            <a id="nav-support" class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/10 px-4 py-3 border-l-4 border-transparent rounded-r-lg transition-colors border-l-4 border-transparent" href="#support">
+                <span class="material-symbols-outlined">support_agent</span>
+                <span class="text-body-md">Support &amp; Feedback</span>
+            </a>
+        </nav>
+        <!-- Footer Links & Profile Card -->
+        <div class="px-3 mt-auto flex flex-col gap-4">
+            <a id="nav-settings" class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/10 px-4 py-3 border-l-4 border-transparent rounded-r-lg transition-colors" href="#settings">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="text-body-md">Settings</span>
+            </a>
+            <div class="mx-3 mt-4 p-3 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center justify-between cursor-pointer hover:bg-surface-container-high transition-colors" onclick="routeTo('#settings')">
+                <div class="flex items-center gap-3">
+                    <img class="manager-pic w-10 h-10 rounded-full border border-outline-variant object-cover" src="" alt="Profile"/>
+                    <div>
+                        <p class="manager-name text-body-md font-semibold text-on-surface"></p>
+                        <p class="manager-role text-label-caps text-on-surface-variant text-[10px]">Fleet Manager</p>
+                    </div>
+                </div>
+                <span class="material-symbols-outlined text-on-surface-variant hover:text-error" onclick="logout(); event.stopPropagation();">logout</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Panel Wrapper -->
+    <main class="flex-1 ml-[280px] flex flex-col min-h-screen relative z-10">
+        
+        <!-- Header / Shared TopAppBar Component -->
+        <header class="flex justify-between items-center w-full px-container-margin py-stack-md sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-outline-variant/10">
+            <div>
+                <h2 id="topbar-title" class="text-headline-lg font-bold text-on-surface">Fleet Command</h2>
+                <p id="topbar-subtitle" class="text-body-md text-on-surface-variant mt-1">Real-time control station dashboard</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative w-80">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input id="global-search" class="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant" placeholder="Search operations, vehicles, drivers..." type="text" oninput="handleGlobalSearch()"/>
+                </div>
+                <div class="relative">
+                    <button id="notification-btn" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-on-surface hover:bg-surface-variant/20 transition-all relative glow-hover" onclick="toggleNotificationDropdown(event)">
+                        <span id="notification-badge" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-secondary rounded-full shadow-[0_0_8px_rgba(78,222,163,0.8)] hidden animate-pulse"></span>
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <!-- Notification Dropdown Menu -->
+                    <div id="notification-dropdown" class="absolute right-0 mt-2 w-80 glass-card rounded-2xl p-4 shadow-2xl border border-outline-variant/30 hidden z-50 flex flex-col gap-3 max-h-[400px] overflow-y-auto hide-scrollbar">
+                        <div class="flex justify-between items-center pb-2 border-b border-outline-variant/20">
+                            <span class="text-body-md font-bold text-on-surface">Notifications</span>
+                            <button class="text-label-caps text-primary hover:text-white text-[10px]" onclick="clearNotifications()">Clear All</button>
+                        </div>
+                        <div id="notification-list" class="flex flex-col gap-3">
+                            <!-- Populated Dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- VIEW 1: FLEET DASHBOARD -->
+        <div id="view-dashboard" class="p-container-margin flex flex-col gap-6 flex-1">
+            <!-- Summary Stats Cards Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Vehicles -->
+                <div class="glass-card rounded-xl p-card-padding relative overflow-hidden group cursor-pointer" onclick="routeTo('#vehicles')">
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                            <span class="material-symbols-outlined text-primary">directions_bus</span>
+                        </div>
+                        <div class="px-2 py-1 rounded-full bg-secondary/10 flex items-center gap-1 border border-secondary/20">
+                            <span class="material-symbols-outlined text-[14px] text-secondary">trending_up</span>
+                            <span class="text-label-caps text-secondary font-bold">4.2%</span>
+                        </div>
+                    </div>
+                    <p class="text-body-md text-on-surface-variant mb-1">Total Vehicles</p>
+                    <h3 id="dash-total-vehicles" class="text-display-lg text-on-surface">248</h3>
+                    <!-- Decorative Sparkline -->
+                    <div class="absolute bottom-4 right-4 w-24 h-8 opacity-50 chart-glow-primary">
+                        <svg class="w-full h-full stroke-primary fill-none" stroke-linecap="round" stroke-width="2" viewbox="0 0 100 30">
+                            <path d="M0 25 Q 20 25, 40 15 T 70 10 T 100 5"></path>
+                        </svg>
+                    </div>
+                </div>
+                <!-- Card 2: Active Drivers -->
+                <div class="glass-card rounded-xl p-card-padding relative overflow-hidden group cursor-pointer" onclick="routeTo('#drivers')">
+                    <div class="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center border border-secondary/20">
+                            <span class="material-symbols-outlined text-secondary">person_play</span>
+                        </div>
+                        <div class="px-2 py-1 rounded-full bg-secondary/10 flex items-center gap-1 border border-secondary/20">
+                            <span class="material-symbols-outlined text-[14px] text-secondary">trending_up</span>
+                            <span class="text-label-caps text-secondary font-bold">2.8%</span>
+                        </div>
+                    </div>
+                    <p class="text-body-md text-on-surface-variant mb-1">Active Drivers</p>
+                    <h3 id="dash-active-drivers" class="text-display-lg text-on-surface">186</h3>
+                    <div class="absolute bottom-4 right-4 w-24 h-8 opacity-50 chart-glow-secondary">
+                        <svg class="w-full h-full stroke-secondary fill-none" stroke-linecap="round" stroke-width="2" viewbox="0 0 100 30">
+                            <path d="M0 25 L 30 20 L 60 15 L 100 5"></path>
+                        </svg>
+                    </div>
+                </div>
+                <!-- Card 3: Pending Bookings -->
+                <div class="glass-card rounded-xl p-card-padding relative overflow-hidden group cursor-pointer" onclick="routeTo('#booking')">
+                    <div class="absolute inset-0 bg-gradient-to-br from-error/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-error/10 flex items-center justify-center border border-error/20">
+                            <span class="material-symbols-outlined text-error">confirmation_number</span>
+                        </div>
+                        <div class="px-2 py-1 rounded-full bg-error/10 flex items-center gap-1 border border-error/20">
+                            <span class="material-symbols-outlined text-[14px] text-error">trending_down</span>
+                            <span class="text-label-caps text-error font-bold">1.5%</span>
+                        </div>
+                    </div>
+                    <p class="text-body-md text-on-surface-variant mb-1">Pending Bookings</p>
+                    <h3 id="dash-pending-bookings" class="text-display-lg text-on-surface">42</h3>
+                    <div class="absolute bottom-4 right-4 w-24 h-8 opacity-50 chart-glow-error">
+                        <svg class="w-full h-full stroke-error fill-none" stroke-linecap="round" stroke-width="2" viewbox="0 0 100 30">
+                            <path d="M0 5 Q 30 5, 50 15 T 100 25"></path>
+                        </svg>
+                    </div>
+                </div>
+                <!-- Card 4: Distance -->
+                <div class="glass-card rounded-xl p-card-padding relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-tertiary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-tertiary/10 flex items-center justify-center border border-tertiary/20">
+                            <span class="material-symbols-outlined text-tertiary">speed</span>
+                        </div>
+                        <div class="px-2 py-1 rounded-full bg-secondary/10 flex items-center gap-1 border border-secondary/20">
+                            <span class="material-symbols-outlined text-[14px] text-secondary">trending_up</span>
+                            <span class="text-label-caps text-secondary font-bold">11.3%</span>
+                        </div>
+                    </div>
+                    <p class="text-body-md text-on-surface-variant mb-1">Fleet Distance</p>
+                    <h3 id="dash-fleet-distance" class="text-display-lg text-on-surface flex items-baseline gap-1">0 <span class="text-headline-md text-on-surface-variant font-normal">k km</span></h3>
+                    <div class="absolute bottom-4 right-4 w-24 h-8 opacity-50 chart-glow-secondary">
+                        <svg class="w-full h-full stroke-secondary fill-none" stroke-linecap="round" stroke-width="2" viewbox="0 0 100 30">
+                            <path d="M0 25 Q 40 20, 60 10 T 100 5"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Layout Grid (Map + Alerts) -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-[500px]">
+                <!-- Interactive Live Fleet Monitor Map (2 cols) -->
+                <div id="map-container-card" class="glass-card rounded-xl lg:col-span-2 overflow-hidden relative flex flex-col min-h-[450px]">
+                    <div class="p-card-padding border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-lowest/50 absolute top-0 left-0 right-0 z-10 backdrop-blur-md">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(78,222,163,0.8)] animate-pulse"></div>
+                                <h3 class="text-headline-md font-semibold text-on-surface">Live Fleet Monitoring</h3>
+                            </div>
+                            <p class="text-body-md text-on-surface-variant">Active vehicles dispatch tracked live</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-on-surface-variant transition-colors" onclick="showToast('GPS: Layers loaded.', 'info')"><span class="material-symbols-outlined">layers</span></button>
+                            <button class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-on-surface-variant transition-colors" onclick="toggleMapFullscreen()"><span class="material-symbols-outlined">open_in_full</span></button>
+                        </div>
+                    </div>
+                    <!-- Isometric Dark Map Background -->
+                    <div class="flex-1 relative bg-surface-container-lowest overflow-hidden">
+                        <img alt="Map" class="w-full h-full object-cover opacity-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRxJQoTVNo8Tq2zOQwunfxC6pBUIXU3lYMP0vzidNV5Z-0BKVGeuvzX41PbhJsMSo-_QErgHUX_652Uqibq-tt10q0EW8aDtsXUMoO-vfRl5uO6a4-lcxR55ItkpJuWaoctAYyFZbCferdTm-ciBl8VUAtahk6GzFl2rk6zyj-UmUM14s8IDlwjF7Xl0Ry0d9VIfbfGVvpRr3LWb2o6vbKrptsXfsAMHYTZ0bc-ySMB4BWUwjtaI6Zgdg0DFE2QAshNJDbyslEIbk"/>
+                        <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+                        
+                        <!-- Moving Vehicle Markers (Simulated Interactive GPS) -->
+                        <div class="map-marker-dot absolute map-marker cursor-pointer" style="top: 40%; left: 30%;" data-base-left="30" data-base-top="40" onclick="showToast('VH-1042: Heading Downtown on route R-104.', 'success')">
+                            <div class="relative flex items-center justify-center">
+                                <span class="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-primary opacity-30"></span>
+                                <div class="w-7 h-3.5 bg-primary rounded-sm shadow-[0_0_15px_rgba(76,215,246,0.8)] border border-white/30 transform -rotate-12 flex items-center justify-center text-[7px] text-white font-bold">VH-10</div>
+                            </div>
+                        </div>
+                        <div class="map-marker-dot absolute map-marker cursor-pointer" style="top: 60%; left: 45%;" data-base-left="45" data-base-top="60" onclick="showToast('VH-4400: Approaching Airport. Status: On Time.', 'success')">
+                            <div class="relative flex items-center justify-center">
+                                <span class="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-primary opacity-30"></span>
+                                <div class="w-7 h-3.5 bg-primary rounded-sm shadow-[0_0_15px_rgba(76,215,246,0.8)] border border-white/30 transform rotate-45 flex items-center justify-center text-[7px] text-white font-bold">VH-44</div>
+                            </div>
+                        </div>
+                        <div class="map-marker-dot absolute map-marker cursor-pointer" style="top: 75%; left: 65%;" data-base-left="65" data-base-top="75" onclick="showToast('VH-3301: Heavy traffic diversion active.', 'success')">
+                            <div class="relative flex items-center justify-center">
+                                <span class="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-tertiary opacity-30"></span>
+                                <div class="w-7 h-3.5 bg-tertiary rounded-sm shadow-[0_0_15px_rgba(255,185,95,0.8)] border border-white/30 transform -rotate-6 flex items-center justify-center text-[7px] text-white font-bold">VH-33</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Side: Alerts Panel -->
+                <div class="flex flex-col gap-6">
+                    <div class="glass-card rounded-xl flex-1 flex flex-col h-full">
+                        <div class="p-card-padding border-b border-outline-variant/20 flex justify-between items-center">
+                            <h3 class="text-headline-md font-semibold text-on-surface flex items-center gap-2">
+                                <span class="material-symbols-outlined text-on-surface-variant">notifications_active</span>
+                                Warnings &amp; Logs
+                            </h3>
+                            <span id="dash-alerts-badge" class="px-2 py-0.5 rounded text-label-caps bg-error/20 text-error border border-error/30 shadow-sm">1 Critical</span>
+                        </div>
+                        <!-- Alert Queue List -->
+                        <div id="dash-alerts-container" class="p-card-padding flex flex-col gap-4 overflow-y-auto max-h-[380px] hide-scrollbar">
+                            <!-- Populated Dynamically by app.js -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: VEHICLE MANAGEMENT -->
+        <div id="view-vehicles" class="p-container-margin flex-1 hidden">
+            <!-- Header bar with filter/action -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+                <div>
+                    <p class="text-body-lg text-on-surface-variant">Manage your fleet inventory, track live status, and monitor vehicle health.</p>
+                    <div id="vehicle-filters" class="flex flex-wrap gap-2 mt-4">
+                        <button class="px-4 py-2 rounded-full bg-primary/20 border border-primary/50 text-body-md text-primary font-semibold shadow-md" onclick="filterVehicles('All', this)">All Vehicles</button>
+                        <button class="px-4 py-2 rounded-full border border-white/10 text-body-md text-on-surface-variant hover:text-white hover:bg-white/5 transition-all" onclick="filterVehicles('In Transit', this)">In Transit</button>
+                        <button class="px-4 py-2 rounded-full border border-white/10 text-body-md text-on-surface-variant hover:text-white hover:bg-white/5 transition-all" onclick="filterVehicles('Available', this)">Available</button>
+                        <button class="px-4 py-2 rounded-full border border-white/10 text-body-md text-on-surface-variant hover:text-white hover:bg-white/5 transition-all" onclick="filterVehicles('Maintenance', this)">Maintenance</button>
+                    </div>
+                </div>
+                <div id="vehicles-admin-actions" class="flex gap-2 w-full md:w-auto">
+                    <button class="neon-btn text-white px-6 py-3 rounded-lg flex items-center gap-2 font-semibold text-body-md flex-shrink-0" onclick="openAddVehicleModal()">
+                        <span class="material-symbols-outlined">add</span>
+                        Add New Vehicle
+                    </button>
+                </div>
+            </div>
+            <!-- Vehicle Cards Grid -->
+            <div id="vehicles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+                <!-- Rendered dynamically by app.js -->
+            </div>
+        </div>
+
+        <!-- VIEW 3: DRIVER ROSTER MANAGEMENT -->
+        <div id="view-drivers" class="px-container-margin pb-12 flex-grow hidden">
+            <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 mt-6">
+                <div>
+                    <p class="text-body-lg text-on-surface-variant">Monitor driver operational roster, trip history, and daily attendance logs.</p>
+                </div>
+                <div id="drivers-admin-actions" class="flex gap-2 w-full md:w-auto">
+                    <button class="neon-btn text-white px-6 py-3 rounded-xl flex items-center gap-2 font-semibold text-body-md flex-shrink-0" onclick="openAddDriverModal()">
+                        <span class="material-symbols-outlined">person_add</span> Add Driver
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats counter row -->
+            <div class="mb-10 flex gap-6 overflow-x-auto pb-4 hide-scrollbar">
+                <div class="glass-card rounded-xl p-6 min-w-[200px] flex-shrink-0 glow-present relative overflow-hidden border-secondary/20">
+                    <div class="absolute inset-0 bg-secondary/5 pointer-events-none"></div>
+                    <div class="relative z-10 flex items-center justify-between">
+                        <div>
+                            <div id="driver-present-count" class="text-metric-value text-secondary mb-1">4</div>
+                            <div class="text-body-md text-on-surface-variant">Present today</div>
+                        </div>
+                        <div class="flex items-end gap-1 h-12">
+                            <div class="w-2 h-6 bg-secondary/40 rounded-t-sm"></div>
+                            <div class="w-2 h-8 bg-secondary/60 rounded-t-sm"></div>
+                            <div class="w-2 h-12 bg-secondary rounded-t-sm glow-active" style="box-shadow: 0 0 10px rgba(78,222,163,0.5);"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card rounded-xl p-6 min-w-[200px] flex-shrink-0 glow-absent relative overflow-hidden border-error/20">
+                    <div class="absolute inset-0 bg-error/5 pointer-events-none"></div>
+                    <div class="relative z-10 flex items-center justify-between">
+                        <div>
+                            <div id="driver-absent-count" class="text-metric-value text-error mb-1">2</div>
+                            <div class="text-body-md text-on-surface-variant">Absent today</div>
+                        </div>
+                        <div class="flex items-end gap-1 h-12">
+                            <div class="w-2 h-10 bg-error/40 rounded-t-sm"></div>
+                            <div class="w-2 h-7 bg-error/60 rounded-t-sm"></div>
+                            <div class="w-2 h-5 bg-error rounded-t-sm glow-active" style="box-shadow: 0 0 10px rgba(255,180,171,0.5);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Driver Roster grid -->
+            <div id="drivers-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                <!-- Rendered dynamically by app.js -->
+            </div>
+        </div>
+
+        <!-- VIEW 4: ROUTES & TRIPS -->
+        <div id="view-routes" class="flex-1 px-container-margin pb-container-margin pt-6 flex flex-col gap-6 hidden">
+            <div class="flex justify-between items-end mb-2">
+                <div>
+                    <h3 class="text-headline-md font-semibold text-on-surface">Active Routes &amp; Trips</h3>
+                    <p id="routes-scheduled-text" class="text-body-md text-on-surface-variant">5 routes scheduled today</p>
+                </div>
+                <div id="routes-admin-actions" class="flex gap-3">
+                    <button class="flex items-center gap-2 bg-gradient-to-r from-secondary to-secondary-container text-black font-bold px-6 py-2.5 rounded-lg border-t border-white/20 hover:shadow-[0_0_15px_rgba(78,222,163,0.4)] transition-all" onclick="runAIRouteOptimization()">
+                        <span class="material-symbols-outlined text-sm">psychology</span>
+                        <span class="text-body-md">AI Route Optimization</span>
+                    </button>
+                    <button class="flex items-center gap-2 bg-gradient-to-r from-primary to-inverse-primary text-on-primary-fixed font-bold px-6 py-2.5 rounded-lg border-t border-white/20 hover:shadow-[0_0_15px_rgba(76,215,246,0.4)] transition-all" onclick="openScheduleTripModal()">
+                        <span class="material-symbols-outlined text-sm">add</span>
+                        <span class="text-body-md">Schedule New Trip</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Active trips list -->
+            <div id="routes-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Rendered dynamically by app.js -->
+            </div>
+        </div>
+
+        <!-- VIEW 5: BOOKING PORTAL -->
+        <div id="view-booking" class="p-container-margin flex-1 grid grid-cols-12 gap-6 items-start hidden">
+            <!-- Left Form Area (Spans 8 cols) -->
+            <div class="col-span-12 lg:col-span-8 space-y-6">
+                <div class="glass-card rounded-2xl p-8 relative overflow-hidden">
+                    <div class="absolute -top-24 -left-24 w-48 h-48 bg-primary/20 rounded-full blur-[80px]"></div>
+                    <h3 class="text-headline-lg font-bold text-primary cyber-glow mb-2 relative z-10">Book Your Trip</h3>
+                    <p class="text-body-lg text-on-surface-variant mb-8 relative z-10">Reserve a SkyWays vehicle for your journey in few simple steps.</p>
+                    
+                    <!-- Form Fields -->
+                    <div class="grid grid-cols-2 gap-6 mb-8 relative z-10">
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block">Pick-up Point</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary">near_me</span>
+                                <input id="book-pickup" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/70" type="text" value="Central Station"/>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block">Destination</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-error">location_on</span>
+                                <input id="book-destination" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/70" type="text" value="Airport Terminal 3"/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-6 mb-10 relative z-10">
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block">Date</label>
+                            <div class="relative">
+                                <input id="book-date" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-4 pr-10 text-body-lg text-on-surface [color-scheme:dark] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" type="date"/>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block">Time</label>
+                            <div class="relative">
+                                <input id="book-time" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-4 pr-10 text-body-lg text-on-surface [color-scheme:dark] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" type="time"/>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block">Passengers</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">group</span>
+                                <input id="book-passengers" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" min="1" type="number" value="1"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Preferences Grid Selector -->
+                    <div class="relative z-10">
+                        <label class="text-label-caps text-on-surface-variant block mb-4">Vehicle Preference</label>
+                        <div id="booking-pref-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <!-- Coach Option -->
+                            <div class="glass-card rounded-xl p-4 vehicle-card active relative overflow-hidden group" data-type="Luxury Coach">
+                                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-tertiary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(255,185,95,0.8)]"></div>
+                                        <span class="text-label-caps text-on-surface">25 Seats</span>
+                                    </div>
+                                    <span class="material-symbols-outlined text-tertiary text-sm">directions_bus</span>
+                                </div>
+                                <div class="h-24 bg-[url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=300')] bg-cover bg-center rounded-lg mb-4 opacity-70 mix-blend-luminosity group-hover:mix-blend-normal transition-all"></div>
+                                <p class="text-body-md font-medium text-center text-on-surface">Luxury Coach</p>
+                            </div>
+                            <!-- Shuttle Option -->
+                            <div class="glass-card rounded-xl p-4 vehicle-card relative overflow-hidden group" data-type="Express Shuttle">
+                                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(76,215,246,0.8)]"></div>
+                                        <span class="text-label-caps text-on-surface">35 Seats</span>
+                                    </div>
+                                    <span class="material-symbols-outlined text-primary text-sm">airport_shuttle</span>
+                                </div>
+                                <div class="h-24 bg-[url('https://images.unsplash.com/photo-1464219789935-c2d9d9aba644?auto=format&fit=crop&q=80&w=300')] bg-cover bg-center rounded-lg mb-4 opacity-70 mix-blend-luminosity group-hover:mix-blend-normal transition-all"></div>
+                                <p class="text-body-md font-medium text-center text-on-surface">Express Shuttle</p>
+                            </div>
+                            <!-- Mini Bus Option -->
+                            <div class="glass-card rounded-xl p-4 vehicle-card relative overflow-hidden group" data-type="Mini Bus">
+                                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(78,222,163,0.8)]"></div>
+                                        <span class="text-label-caps text-on-surface">10 Seats</span>
+                                    </div>
+                                    <span class="material-symbols-outlined text-secondary text-sm">commute</span>
+                                </div>
+                                <div class="h-24 bg-[url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=300')] bg-cover bg-center rounded-lg mb-4 opacity-70 mix-blend-luminosity group-hover:mix-blend-normal transition-all"></div>
+                                <p class="text-body-md font-medium text-center text-on-surface">Mini Bus</p>
+                            </div>
+                            <!-- No preference -->
+                            <div class="glass-card rounded-xl p-4 vehicle-card relative flex flex-col items-center justify-center group" data-type="No Preference">
+                                <div class="w-12 h-12 rounded-full bg-surface-variant/50 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                                    <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">shuffle</span>
+                                </div>
+                                <p class="text-body-md font-medium text-center text-on-surface-variant group-hover:text-primary">No Preference</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking action trigger button -->
+                    <div class="mt-12 flex justify-center relative z-10">
+                        <div class="relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                            <button class="relative btn-primary px-16 py-4 rounded-xl flex items-center gap-3" onclick="openSeatSelector(event)">
+                                <span class="text-headline-md font-bold text-white tracking-wide">Confirm Reservation</span>
+                                <span class="material-symbols-outlined text-white">arrow_forward</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Portal Info Column -->
+            <div class="col-span-12 lg:col-span-4 space-y-6">
+                <div class="glass-card rounded-2xl p-6 border-t-2 border-t-primary/50 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[40px] translate-x-1/2 -translate-y-1/2"></div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-surface-variant/50 border border-outline-variant/30 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary">verified_user</span>
+                        </div>
+                        <h4 class="text-headline-md font-semibold text-on-surface">Why SkyWays?</h4>
+                    </div>
+                    <p class="text-body-md text-on-surface-variant mb-6">Premium fleet, real-time tracking, and reliable arrivals across the city.</p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-secondary text-xl mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            <span class="text-body-md text-on-surface">Live GPS trip tracking updates</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-secondary text-xl mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            <span class="text-body-md text-on-surface">Verified professional drivers roster</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-secondary text-xl mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            <span class="text-body-md text-on-surface">Flexible automated cancellation</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 6: SETTINGS & DANGER ZONE -->
+        <div id="view-settings" class="p-container-margin flex-1 max-w-4xl space-y-6 hidden">
+            <div class="glass-card rounded-2xl p-8 border-t-2 border-t-primary/50 relative overflow-hidden">
+                <h3 id="settings-title" class="text-headline-lg font-bold text-on-surface mb-2">User Profile Settings</h3>
+                <p id="settings-desc" class="text-body-lg text-on-surface-variant mb-8">Customize profile details and control application defaults.</p>
+                
+                <form onsubmit="saveSettings(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block">First Name</label>
+                            <input id="set-firstname" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text" required/>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block">Last Name</label>
+                            <input id="set-lastname" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text" required/>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block">Email Address</label>
+                            <input id="set-email" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="email" required/>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block">Phone Number</label>
+                            <input id="set-phone" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text"/>
+                        </div>
+                        <!-- Settings Profile Image Upload -->
+                        <div class="space-y-2 md:col-span-2 flex flex-col items-center">
+                            <label class="text-label-caps text-on-surface-variant block self-start">Profile Image</label>
+                            <div class="relative group cursor-pointer" onclick="document.getElementById('set-manager-image').click()">
+                                <div id="set-manager-image-preview" class="w-24 h-24 rounded-full border-2 border-dashed border-outline-variant/50 flex items-center justify-center overflow-hidden bg-surface-container-highest/30 group-hover:border-primary/60 transition-all">
+                                    <span id="set-manager-image-placeholder" class="material-symbols-outlined text-4xl text-on-surface-variant/50 group-hover:text-primary/70 transition-colors">add_a_photo</span>
+                                    <img id="set-manager-image-thumb" class="w-full h-full object-cover hidden" alt="Preview"/>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-background">
+                                    <span class="material-symbols-outlined text-[14px] text-white">edit</span>
+                                </div>
+                            </div>
+                            <p class="text-label-caps text-on-surface-variant text-[10px]">Click to upload profile photo</p>
+                            <input type="file" id="set-manager-image" accept="image/*" class="hidden" onchange="previewSettingsImage(this)"/>
+                        </div>
+                    </div>
+                    <div class="flex justify-end pt-4">
+                        <button type="submit" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold text-body-md">
+                            Save Profile Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Password Reset Section inside Settings -->
+            <div class="glass-card rounded-2xl p-8 border border-white/10 relative overflow-hidden">
+                <h3 class="text-headline-lg font-bold text-on-surface mb-2">Reset Password</h3>
+                <p class="text-body-lg text-on-surface-variant mb-6">Verify your security question details to update your password.</p>
+                
+                <form id="settings-reset-form" onsubmit="handleSettingsReset(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-label-caps text-on-surface-variant block text-[10px]">Email Address</label>
+                            <input id="set-reset-email" class="w-full glass-input rounded-xl py-2.5 px-3 text-body-md text-on-surface" type="email" required/>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-label-caps text-on-surface-variant block text-[10px]">Phone Number</label>
+                            <input id="set-reset-phone" class="w-full glass-input rounded-xl py-2.5 px-3 text-body-md text-on-surface" type="tel" required/>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-label-caps text-on-surface-variant block text-[10px]">Security Question</label>
+                            <select id="set-reset-question" class="w-full glass-input rounded-xl py-2.5 px-3 text-body-sm text-on-surface bg-surface-variant/20" required>
+                                <option value="" disabled selected>Select question</option>
+                                <option value="city">City in which you were born</option>
+                                <option value="teacher">Name of your favorite teacher</option>
+                                <option value="food">Your favorite food</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-label-caps text-on-surface-variant block text-[10px]">Security Answer</label>
+                            <input id="set-reset-answer" class="w-full glass-input rounded-xl py-2.5 px-3 text-body-md text-on-surface" type="text" required placeholder="Your answer"/>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant block text-[10px]">New Password</label>
+                        <input id="set-reset-newpassword" class="w-full glass-input rounded-xl py-2.5 px-3 text-body-md text-on-surface" type="password" required placeholder="••••••••"/>
+                    </div>
+                    <div class="flex justify-end pt-2">
+                        <button type="submit" class="btn-primary text-white px-8 py-2.5 rounded-lg font-semibold text-body-md shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                            Reset & Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Ticket Verification Terminal -->
+            <div id="settings-verify-terminal" class="glass-card rounded-2xl p-8 border border-primary/30 relative overflow-hidden hidden">
+                <h3 class="text-headline-lg font-bold text-on-surface mb-2">Dispatcher Ticket Verification Terminal</h3>
+                <p class="text-body-lg text-on-surface-variant mb-6">Enter a boarding pass / ticket ID to verify passenger booking status and log check-ins in real time.</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input id="verify-ticket-input" type="text" placeholder="Enter Ticket / Pass ID (e.g. 12)" class="flex-grow glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" />
+                    <button class="btn-primary text-white px-8 py-3 rounded-xl font-semibold text-body-md whitespace-nowrap" onclick="triggerTerminalVerification()">
+                        Verify Ticket
+                    </button>
+                </div>
+            </div>
+
+            <!-- Danger Zone reset settings -->
+            <div class="glass-card rounded-2xl p-8 border border-error/30 relative overflow-hidden bg-error/5">
+                <h3 class="text-headline-lg font-bold text-error mb-2">System Reset Zone</h3>
+                <p class="text-body-lg text-on-surface-variant mb-6">Restoring database settings clears current localStorage caches and loads the default design mocks.</p>
+                <button class="px-6 py-3.5 bg-error/25 hover:bg-error/35 text-error rounded-xl font-bold text-body-md border border-error/50 transition-colors" onclick="resetDatabase()">
+                    Reset State to Default Mocks
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW 7: ANALYTICS & REPORTS -->
+        <div id="view-analytics" class="p-container-margin flex flex-col gap-6 flex-1 hidden">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-headline-lg font-bold text-on-surface">Financial Operations Dashboard</h2>
+                    <p class="text-body-md text-on-surface-variant mt-1">Real-time revenue flows and operational expense tracking</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card rounded-xl p-card-padding">
+                    <p class="text-body-md text-on-surface-variant mb-1">Total Revenue</p>
+                    <h3 id="anal-total-revenue" class="text-display-lg text-secondary">$0.00</h3>
+                </div>
+                <div class="glass-card rounded-xl p-card-padding">
+                    <p class="text-body-md text-on-surface-variant mb-1">Total Expenses</p>
+                    <h3 id="anal-total-expenses" class="text-display-lg text-error">$0.00</h3>
+                </div>
+                <div class="glass-card rounded-xl p-card-padding">
+                    <p class="text-body-md text-on-surface-variant mb-1">Net Balance</p>
+                    <h3 id="anal-net-balance" class="text-display-lg text-primary">$0.00</h3>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- SVG Financial Charts -->
+                <div class="glass-card rounded-xl p-6 lg:col-span-2 flex flex-col gap-4">
+                    <h3 class="text-headline-md font-semibold text-on-surface">Financial Analytics Weekly Trends</h3>
+                    <div class="h-64 w-full flex items-center justify-center relative overflow-hidden" id="analytics-chart-container">
+                        <!-- Render dynamic SVG graph here -->
+                    </div>
+                </div>
+
+                <!-- Log New Expense Form -->
+                <div class="glass-card rounded-xl p-6">
+                    <h3 class="text-headline-md font-semibold text-on-surface mb-4">Log Fleet Expense</h3>
+                    <form onsubmit="submitExpenseForm(event)" class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block text-xs">Vehicle</label>
+                            <select id="expense-vehicle" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface bg-surface-container" required>
+                                <!-- Filled by JS -->
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block text-xs">Category</label>
+                            <select id="expense-category" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface bg-surface-container" required>
+                                <option value="Fuel">Fuel Purchase</option>
+                                <option value="Maintenance">Maintenance / Spare Parts</option>
+                                <option value="Salary">Staff Salary</option>
+                                <option value="Insurance">Insurance / Tolls</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Fuel Purchase Details (Visible only when Category is Fuel) -->
+                        <div id="fuel-specific-fields" class="space-y-3">
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="space-y-1">
+                                    <label class="text-label-caps text-on-surface-variant block text-[10px]">Liters</label>
+                                    <input id="fuel-liters" class="w-full glass-input rounded-xl py-2 px-2 text-xs text-on-surface" type="number" step="0.01" min="1" value="40" oninput="calculateFuelAmount()"/>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-label-caps text-on-surface-variant block text-[10px]">Price/L ($)</label>
+                                    <input id="fuel-price" class="w-full glass-input rounded-xl py-2 px-2 text-xs text-on-surface" type="number" step="0.01" min="0.1" value="2.50" oninput="calculateFuelAmount()"/>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-label-caps text-on-surface-variant block text-[10px]">Odometer</label>
+                                    <input id="fuel-odometer" class="w-full glass-input rounded-xl py-2 px-2 text-xs text-on-surface" type="number" min="1" value="12000"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block text-xs">Amount ($)</label>
+                            <input id="expense-amount" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="number" step="0.01" min="1" required/>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-label-caps text-on-surface-variant block text-xs">Note</label>
+                            <input id="expense-note" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="text" placeholder="e.g. Tank refill or Brake pad repair"/>
+                        </div>
+                        <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-semibold text-body-md mt-2">
+                            Log Expense
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Ledger Tables -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card rounded-xl p-6">
+                    <h3 class="text-headline-md font-semibold text-on-surface mb-4">Recent Revenues</h3>
+                    <div class="overflow-x-auto max-h-60 overflow-y-auto">
+                        <table class="w-full text-left text-body-md">
+                            <thead>
+                                <tr class="text-label-caps text-on-surface-variant border-b border-outline-variant/30">
+                                    <th class="py-2">Booking ID</th>
+                                    <th class="py-2">Collected At</th>
+                                    <th class="py-2">Method</th>
+                                    <th class="py-2 text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="revenue-ledger-body">
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="glass-card rounded-xl p-6">
+                    <h3 class="text-headline-md font-semibold text-on-surface mb-4">Recent Expenses</h3>
+                    <div class="overflow-x-auto max-h-60 overflow-y-auto">
+                        <table class="w-full text-left text-body-md">
+                            <thead>
+                                <tr class="text-label-caps text-on-surface-variant border-b border-outline-variant/30">
+                                    <th class="py-2">Vehicle ID</th>
+                                    <th class="py-2">Category</th>
+                                    <th class="py-2">Date</th>
+                                    <th class="py-2 text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expense-ledger-body">
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 8: MY TICKETS (PASSENGER) -->
+        <div id="view-tickets" class="p-container-margin flex flex-col gap-6 flex-1 hidden">
+            <div>
+                <h2 class="text-headline-lg font-bold text-on-surface">My Boarding Passes</h2>
+                <p class="text-body-md text-on-surface-variant mt-1">Manage active reservations, view boarding codes, and rate completed trips</p>
+            </div>
+            <div id="tickets-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Tickets generated dynamically -->
+            </div>
+        </div>
+
+        <!-- VIEW 9: SUPPORT & COMPLAINTS -->
+        <div id="view-support" class="p-container-margin flex flex-col gap-6 flex-1 hidden">
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- Left Hand Side: Submit Ticket / View Logs -->
+                <div class="flex-1 flex flex-col gap-6">
+                    <div class="glass-card rounded-xl p-6" id="passenger-complaint-form-card">
+                        <h3 class="text-headline-md font-semibold text-on-surface mb-4">File Support Request / Complaint</h3>
+                        <form onsubmit="submitComplaintForm(event)" class="space-y-4">
+                            <div class="space-y-2">
+                                <label class="text-label-caps text-on-surface-variant block text-xs">Subject / Title</label>
+                                <input id="complaint-title" class="w-full glass-input rounded-xl py-3 px-4 text-body-md text-on-surface" type="text" placeholder="e.g. Bus delayed, AC malfunction" required/>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-label-caps text-on-surface-variant block text-xs">Details / Description</label>
+                                <textarea id="complaint-desc" class="w-full glass-input rounded-xl py-3 px-4 text-body-md text-on-surface h-32" placeholder="Describe the issue in detail..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold text-body-md">
+                                Submit Ticket
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="glass-card rounded-xl p-6 flex-1">
+                        <h3 class="text-headline-md font-semibold text-on-surface mb-4" id="complaints-list-title">Your Support Logs</h3>
+                        <div class="space-y-4 max-h-96 overflow-y-auto" id="complaints-list-container">
+                            <!-- Filled dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Hand Side: AI Support Live Chat Simulation -->
+                <div class="w-full md:w-96 flex flex-col gap-6">
+                    <div class="glass-card rounded-xl p-6 flex flex-col h-[500px]">
+                        <div class="flex items-center gap-3 pb-4 border-b border-outline-variant/30">
+                            <div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined">support_agent</span>
+                            </div>
+                            <div>
+                                <h4 class="text-body-lg font-semibold text-on-surface">SkyWays Assistant</h4>
+                                <p class="text-label-caps text-secondary text-[10px] uppercase font-bold tracking-wider">Live Sim Agent</p>
+                            </div>
+                        </div>
+
+                        <!-- Chat messages log -->
+                        <div class="flex-grow overflow-y-auto py-4 space-y-4 text-body-md text-on-surface" id="chat-messages-container">
+                            <div class="flex gap-2">
+                                <div class="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center text-primary">
+                                    <span class="material-symbols-outlined text-xs">smart_toy</span>
+                                </div>
+                                <div class="bg-white/5 border border-white/10 rounded-xl p-3 max-w-[80%]">
+                                    Hello! Welcome to SkyWays Support Portal. How can I assist you today?
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Input -->
+                        <form onsubmit="submitChatForm(event)" class="flex gap-2 mt-auto pt-3 border-t border-outline-variant/30">
+                            <input id="chat-input-field" class="flex-grow bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-body-md text-on-surface focus:outline-none focus:border-primary placeholder:text-on-surface-variant" placeholder="Ask about bookings, cancel, refunds..."/>
+                            <button type="submit" class="w-10 h-10 bg-primary hover:bg-primary-container text-black font-bold rounded-xl flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined">send</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== MODALS INVENTORY ==================== -->
+
+    <!-- MODAL 1: VEHICLE (Add / Edit) -->
+    <div id="modal-vehicle" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 hidden">
+        <div class="modal-content glass-card w-full max-w-2xl rounded-2xl p-8 border border-outline-variant/30 shadow-2xl relative">
+            <button class="absolute top-4 right-4 text-on-surface-variant hover:text-white" onclick="closeAllModals()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h3 id="vehicle-modal-title" class="text-headline-lg font-bold text-on-surface mb-6">Add New Vehicle</h3>
+            
+            <form onsubmit="submitVehicleForm(event)" class="space-y-6">
+                <!-- Action Type Flag -->
+                <input type="hidden" id="vehicle-action-type" value="add"/>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2" id="vehicle-id-field">
+                        <label class="text-label-caps text-on-surface-variant block">Vehicle Code ID</label>
+                        <input id="form-vehicle-id" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text" placeholder="e.g. VH-5511" required/>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Model Name</label>
+                        <input id="form-vehicle-name" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text" placeholder="e.g. Mercedes Citaro" required/>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Shuttle Type</label>
+                        <select id="form-vehicle-type" class="w-full glass-input rounded-xl py-3 px-4 text-body-md text-on-surface bg-surface-container">
+                            <option value="Luxury Coach">Luxury Coach</option>
+                            <option value="Express Shuttle">Express Shuttle</option>
+                            <option value="Mini Bus">Mini Bus</option>
+                            <option value="Electric">Electric Commuter</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Capacity (pax)</label>
+                        <input id="form-vehicle-capacity" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="number" min="1" required/>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Fuel / Battery %</label>
+                        <input id="form-vehicle-energy" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="number" min="0" max="100" required/>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Operational Status</label>
+                        <select id="form-vehicle-status" class="w-full glass-input rounded-xl py-3 px-4 text-body-md text-on-surface bg-surface-container">
+                            <option value="Available">Available (In Depot)</option>
+                            <option value="In Transit">In Transit (Active)</option>
+                            <option value="Maintenance">Maintenance (Workshop)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Location / Assigned Route</label>
+                        <input id="form-vehicle-route" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text" placeholder="e.g. Depot Alpha or R-102"/>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/10">
+                    <button type="button" class="px-6 py-3 rounded-lg border border-white/10 text-on-surface hover:bg-white/5" onclick="closeAllModals()">Cancel</button>
+                    <button type="submit" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">Submit Vehicle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: DRIVER (Add) -->
+    <div id="modal-driver" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 hidden">
+        <div class="modal-content glass-card w-full max-w-lg rounded-2xl p-8 border border-outline-variant/30 shadow-2xl relative">
+            <button class="absolute top-4 right-4 text-on-surface-variant hover:text-white" onclick="closeAllModals()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h3 id="driver-modal-title" class="text-headline-lg font-bold text-on-surface mb-6">Add New Driver Profile</h3>
+            
+            <form id="driver-form" onsubmit="submitDriverForm(event)" class="space-y-6">
+                <!-- Action Type Flag -->
+                <input type="hidden" id="driver-action-type" value="add"/>
+                <!-- Profile Image Upload -->
+                <div class="flex flex-col items-center gap-3">
+                    <div class="relative group cursor-pointer" onclick="document.getElementById('form-driver-image').click()">
+                        <div id="driver-image-preview" class="w-24 h-24 rounded-full border-2 border-dashed border-outline-variant/50 flex items-center justify-center overflow-hidden bg-surface-container-highest/30 group-hover:border-primary/60 transition-all">
+                            <span id="driver-image-placeholder" class="material-symbols-outlined text-4xl text-on-surface-variant/50 group-hover:text-primary/70 transition-colors">add_a_photo</span>
+                            <img id="driver-image-thumb" class="w-full h-full object-cover hidden" alt="Preview"/>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-background">
+                            <span class="material-symbols-outlined text-[14px] text-white">edit</span>
+                        </div>
+                    </div>
+                    <p class="text-label-caps text-on-surface-variant">Click to upload profile photo</p>
+                    <input type="file" id="form-driver-image" accept="image/*" class="hidden" onchange="previewDriverImage(this)"/>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-label-caps text-on-surface-variant block">Driver ID Code</label>
+                    <input id="form-driver-id" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text" readonly/>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-label-caps text-on-surface-variant block">Full Name</label>
+                    <input id="form-driver-name" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text" placeholder="e.g. Sarah Connor" required/>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-label-caps text-on-surface-variant block">Initial Vehicle Assignment</label>
+                    <select id="form-driver-vehicle" class="w-full glass-input rounded-xl py-3 px-4 text-body-md text-on-surface bg-surface-container">
+                        <!-- Filled dynamically by script -->
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/10">
+                    <button type="button" class="px-6 py-3 rounded-lg border border-white/10 text-on-surface hover:bg-white/5" onclick="closeAllModals()">Cancel</button>
+                    <button type="submit" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">Add Driver</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: DISPATCH TRIP (Schedule) -->
+    <div id="modal-trip" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 hidden">
+        <div class="modal-content glass-card w-full max-w-xl rounded-2xl p-8 border border-outline-variant/30 shadow-2xl relative">
+            <button class="absolute top-4 right-4 text-on-surface-variant hover:text-white" onclick="closeAllModals()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h3 class="text-headline-lg font-bold text-on-surface mb-6">Schedule &amp; Dispatch Trip</h3>
+            
+            <form onsubmit="submitTripForm(event)" class="space-y-6">
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Trip ID</label>
+                        <input id="form-trip-id" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text" readonly/>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Distance (km)</label>
+                        <input id="form-trip-distance" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="number" min="1" required/>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Pick-up Source</label>
+                        <input id="form-trip-source" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text" required/>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Destination</label>
+                        <input id="form-trip-dest" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="text" required/>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Vehicle Dispatch</label>
+                        <select id="form-trip-vehicle" class="w-full glass-input rounded-xl py-3 px-4 text-body-md text-on-surface bg-surface-container">
+                            <!-- Populated with Available vehicles by script -->
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-label-caps text-on-surface-variant block">Driver Assignment</label>
+                        <select id="form-trip-driver" class="w-full glass-input rounded-xl py-3 px-4 text-body-md text-on-surface bg-surface-container">
+                            <!-- Populated with Present drivers by script -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-label-caps text-on-surface-variant block">Estimated Duration (minutes)</label>
+                    <input id="form-trip-duration" class="w-full glass-input rounded-xl py-3 px-4 text-body-lg text-on-surface" type="number" min="5" required/>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/10">
+                    <button type="button" class="px-6 py-3 rounded-lg border border-white/10 text-on-surface hover:bg-white/5" onclick="closeAllModals()">Cancel</button>
+                    <button type="submit" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">rocket_launch</span> Dispatch Trip
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: SEAT RESERVATION (Selector Grid) -->
+    <div id="modal-seat-selector" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 hidden">
+        <div class="modal-content glass-card w-full max-w-lg rounded-2xl p-8 border border-outline-variant/30 shadow-2xl relative flex flex-col items-center">
+            <button class="absolute top-4 right-4 text-on-surface-variant hover:text-white" onclick="closeAllModals()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h3 class="text-headline-lg font-bold text-on-surface mb-2">Select Your Seats</h3>
+            <p class="text-body-md text-on-surface-variant mb-6 text-center">Interactive bus seat allocation layout</p>
+            
+            <!-- Visual Bus Layout -->
+            <div class="w-full bg-surface-container-low/50 border border-outline-variant/30 rounded-2xl p-6 mb-6 flex flex-col items-center">
+                <!-- Driver Section at the front of the bus -->
+                <div class="flex justify-between w-full max-w-[240px] mb-4 pb-3 border-b border-outline-variant/20">
+                    <div class="text-label-caps text-on-surface-variant flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">front_hand</span> FRONT
+                    </div>
+                    <div class="w-8 h-8 rounded bg-surface-container-highest border border-outline-variant/50 flex items-center justify-center text-on-surface-variant" title="Driver Cabin">
+                        <span class="material-symbols-outlined text-sm">directions_car</span>
+                    </div>
+                </div>
+
+                <!-- Seat Grid Layout -->
+                <div class="grid grid-cols-5 gap-2 max-w-[240px]" id="seat-map-grid">
+                    <!-- Dynamic seats filled by JS -->
+                </div>
+            </div>
+
+            <!-- Seat Legend -->
+            <div class="flex gap-4 mb-6 text-label-caps text-xs">
+                <div class="flex items-center gap-1.5">
+                    <div class="w-4 h-4 rounded bg-surface-container border border-outline-variant/50"></div> Available
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <div class="w-4 h-4 rounded bg-primary border border-primary-fixed text-black"></div> Selected
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <div class="w-4 h-4 rounded bg-error/30 border border-error/50 cursor-not-allowed"></div> Occupied
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 w-full border-t border-outline-variant/10 pt-4">
+                <button type="button" class="px-6 py-3 rounded-lg border border-white/10 text-on-surface hover:bg-white/5" onclick="closeAllModals()">Cancel</button>
+                <button type="button" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold" onclick="confirmSeatSelection()">Confirm Seats</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: SUBMIT FEEDBACK -->
+    <div id="modal-feedback" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 hidden">
+        <div class="modal-content glass-card w-full max-w-md rounded-2xl p-8 border border-outline-variant/30 shadow-2xl relative">
+            <button class="absolute top-4 right-4 text-on-surface-variant hover:text-white" onclick="closeAllModals()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h3 class="text-headline-lg font-bold text-on-surface mb-2">Rate Your Journey</h3>
+            <p class="text-body-md text-on-surface-variant mb-6">Your feedback helps us optimize routes and driver scheduling</p>
+
+            <form onsubmit="submitFeedbackForm(event)" class="space-y-6">
+                <input type="hidden" id="feedback-booking-id" value=""/>
+                <!-- Visual Star Rating Selector -->
+                <div class="flex justify-center gap-2" id="feedback-stars-container">
+                    <span class="material-symbols-outlined text-3xl text-tertiary cursor-pointer hover:scale-110 transition-transform" data-val="1" onclick="selectFeedbackStars(1)">star</span>
+                    <span class="material-symbols-outlined text-3xl text-tertiary cursor-pointer hover:scale-110 transition-transform" data-val="2" onclick="selectFeedbackStars(2)">star</span>
+                    <span class="material-symbols-outlined text-3xl text-tertiary cursor-pointer hover:scale-110 transition-transform" data-val="3" onclick="selectFeedbackStars(3)">star</span>
+                    <span class="material-symbols-outlined text-3xl text-tertiary cursor-pointer hover:scale-110 transition-transform" data-val="4" onclick="selectFeedbackStars(4)">star</span>
+                    <span class="material-symbols-outlined text-3xl text-tertiary cursor-pointer hover:scale-110 transition-transform" data-val="5" onclick="selectFeedbackStars(5)">star</span>
+                </div>
+                <input type="hidden" id="form-feedback-rating" value="5" />
+
+                <div class="space-y-2">
+                    <label class="text-label-caps text-on-surface-variant block text-xs">Review comments</label>
+                    <textarea id="form-feedback-comments" class="w-full glass-input rounded-xl py-3 px-4 text-body-md text-on-surface h-24" placeholder="How was the route timing, driver service, and bus comfort?"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/10">
+                    <button type="button" class="px-6 py-3 rounded-lg border border-white/10 text-on-surface hover:bg-white/5" onclick="closeAllModals()">Cancel</button>
+                    <button type="submit" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">Submit Rating</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 6: TICKET VERIFICATION & BOARDING -->
+    <div id="modal-ticket-verify" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 hidden">
+        <div class="modal-content glass-card w-full max-w-md rounded-2xl p-8 border border-outline-variant/30 shadow-2xl relative">
+            <button class="absolute top-4 right-4 text-on-surface-variant hover:text-white" onclick="closeAllModals()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h3 class="text-headline-lg font-bold text-on-surface mb-2">Boarding Pass Verification</h3>
+            <p class="text-body-md text-on-surface-variant mb-6">Verify pass details, seats, and check-in confirmation status.</p>
+
+            <div class="space-y-4 text-on-surface text-body-md">
+                <div class="flex justify-between border-b border-outline-variant/15 pb-2">
+                    <span class="text-on-surface-variant">Pass/Booking ID:</span>
+                    <span id="verify-modal-id" class="font-bold text-primary"></span>
+                </div>
+                <div class="flex justify-between border-b border-outline-variant/15 pb-2">
+                    <span class="text-on-surface-variant">Passenger Name:</span>
+                    <span id="verify-modal-name" class="font-semibold"></span>
+                </div>
+                <div class="flex justify-between border-b border-outline-variant/15 pb-2">
+                    <span class="text-on-surface-variant">Seat Allocated:</span>
+                    <span id="verify-modal-seats" class="font-semibold text-secondary"></span>
+                </div>
+                <div class="flex justify-between border-b border-outline-variant/15 pb-2">
+                    <span class="text-on-surface-variant">Route:</span>
+                    <span id="verify-modal-route" class="font-semibold"></span>
+                </div>
+                <div class="flex justify-between border-b border-outline-variant/15 pb-2">
+                    <span class="text-on-surface-variant">Departure:</span>
+                    <span id="verify-modal-datetime" class="font-semibold"></span>
+                </div>
+                <div class="flex justify-between border-b border-outline-variant/15 pb-2">
+                    <span class="text-on-surface-variant">Security Status:</span>
+                    <span id="verify-modal-status-badge" class="px-2 py-0.5 rounded-full text-xs font-semibold"></span>
+                </div>
+                
+                <!-- Dynamic Check-in Terminal Status -->
+                <div id="verify-modal-checkin-info" class="p-3.5 rounded-xl border flex gap-3 items-start">
+                    <!-- Icon and text dynamically updated by JS -->
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-6 border-t border-outline-variant/10 mt-6">
+                <button type="button" class="px-6 py-3 rounded-lg border border-white/10 text-on-surface hover:bg-white/5" onclick="closeAllModals()">Close</button>
+                <button type="button" id="verify-modal-confirm-btn" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold hidden" onclick="confirmPassengerBoarded()">Confirm Boarded</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW/EDIT PASSENGER ROSTER MODAL -->
+    <div id="modal-passenger-roster" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 hidden">
+        <div class="glass-card rounded-2xl w-full max-w-4xl p-6 relative flex flex-col max-h-[90vh] overflow-y-auto border border-outline-variant/30">
+            <button class="absolute top-4 right-4 text-on-surface-variant hover:text-white" onclick="closeAllModals()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 id="roster-modal-title" class="text-headline-lg font-bold text-on-surface mb-2">Passenger & Seat Roster</h2>
+            <p class="text-body-md text-on-surface-variant mb-6">View passengers and manage seat allocations for this trip.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Passenger Details Form -->
+                <div>
+                    <h3 class="text-headline-md font-semibold text-on-surface mb-4">Passenger Information</h3>
+                    <form id="roster-passenger-form" onsubmit="submitRosterPassengerForm(event)" class="flex flex-col gap-4">
+                        <input type="hidden" id="roster-booking-id">
+                        <input type="hidden" id="roster-trip-id">
+                        <div>
+                            <label class="text-label-caps text-on-surface-variant block mb-1">Passenger Name</label>
+                            <input type="text" id="roster-passenger-name" class="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-4 py-2 text-on-surface focus:border-primary focus:outline-none" required>
+                        </div>
+                        <div>
+                            <label class="text-label-caps text-on-surface-variant block mb-1">Contact Number</label>
+                            <input type="text" id="roster-passenger-contact" class="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-4 py-2 text-on-surface focus:border-primary focus:outline-none" required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-label-caps text-on-surface-variant block mb-1">Pickup Point</label>
+                                <input type="text" id="roster-pickup-point" class="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-4 py-2 text-on-surface focus:border-primary focus:outline-none" readonly>
+                            </div>
+                            <div>
+                                <label class="text-label-caps text-on-surface-variant block mb-1">Destination</label>
+                                <input type="text" id="roster-destination" class="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-4 py-2 text-on-surface focus:border-primary focus:outline-none" readonly>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-label-caps text-on-surface-variant block mb-1">Allocated Seats (comma-separated)</label>
+                            <input type="text" id="roster-allocated-seats" class="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-4 py-2 text-on-surface focus:border-primary focus:outline-none" placeholder="e.g. 1A, 1B">
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-black font-semibold py-2.5 rounded-lg border border-primary-fixed hover:bg-primary hover:bg-opacity-90 transition-colors shadow-[0_0_10px_rgba(6,182,212,0.3)] mt-2">
+                            Update Passenger Details
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Roster Seat Grid Map -->
+                <div class="flex flex-col items-center">
+                    <h3 class="text-headline-md font-semibold text-on-surface mb-4">Bus Seat Layout Map</h3>
+                    <div class="glass-card rounded-xl p-4 w-full flex flex-col items-center border border-outline-variant/20">
+                        <div class="w-full max-w-[285px] bg-surface-container-low rounded-lg p-3 mb-4 border border-outline-variant/20 flex justify-between items-center text-label-caps text-on-surface-variant text-[10px]">
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-primary"></span> Passenger</span>
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-error/30 border border-error/50"></span> Booked</span>
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-surface-container border border-outline-variant/50"></span> Free</span>
+                        </div>
+                        <div id="roster-seat-map-grid" class="grid grid-cols-5 gap-3 max-w-[280px]">
+                            <!-- Generated dynamically by app.js -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== AUTHENTICATION OVERLAY ==================== -->
+    <div id="auth-overlay" class="fixed inset-0 z-[200] flex items-center justify-center bg-background/95 backdrop-blur-[50px] p-4">
+        <div class="glass-card w-full max-w-md rounded-3xl p-8 border border-outline-variant/30 shadow-2xl relative flex flex-col gap-6">
+            <div class="text-center">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center mx-auto shadow-[0_0_20px_rgba(76,215,246,0.4)] mb-4">
+                    <span class="material-symbols-outlined text-white text-3xl font-bold">flight_takeoff</span>
+                </div>
+                <h2 class="text-headline-lg font-bold text-on-surface">Welcome to SkyWays</h2>
+                <p class="text-body-md text-on-surface-variant mt-1">Smart Fleet Command & Transit Management System</p>
+            </div>
+
+            <!-- Role Selector tabs -->
+            <div class="grid grid-cols-3 gap-2 bg-surface-container rounded-xl p-1 border border-outline-variant/30">
+                <button id="role-tab-passenger" class="role-tab px-2 py-2 rounded-lg font-semibold text-xs tracking-wider uppercase text-primary bg-primary/10 border border-primary/20" onclick="selectAuthRole('passenger')">Passenger</button>
+                <button id="role-tab-driver" class="role-tab px-2 py-2 rounded-lg font-semibold text-xs tracking-wider uppercase text-on-surface-variant hover:text-white" onclick="selectAuthRole('driver')">Driver</button>
+                <button id="role-tab-admin" class="role-tab px-2 py-2 rounded-lg font-semibold text-xs tracking-wider uppercase text-on-surface-variant hover:text-white" onclick="selectAuthRole('admin')">Manager</button>
+            </div>
+            <input type="hidden" id="auth-selected-role" value="passenger"/>
+
+            <!-- Login Form -->
+            <form id="auth-login-form" onsubmit="handleAuthLogin(event)" class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-label-caps text-on-surface-variant block text-xs">Username</label>
+                    <input id="auth-login-username" class="w-full glass-input rounded-xl py-3 px-4 text-body-md text-on-surface" type="text" placeholder="Enter username" required/>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-label-caps text-on-surface-variant block text-xs">Password</label>
+                    <input id="auth-login-password" class="w-full glass-input rounded-xl py-3 px-4 text-body-md text-on-surface" type="password" placeholder="••••••••" required/>
+                </div>
+                <div class="text-right">
+                    <a href="#" class="text-secondary hover:underline text-body-sm font-semibold" onclick="toggleAuthMode('forgot')">Forgot Password?</a>
+                </div>
+                <button type="submit" class="w-full btn-primary text-white py-3.5 rounded-xl font-semibold text-body-md mt-1 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                    Access System Portal
+                </button>
+                <p class="text-center text-body-md text-on-surface-variant">
+                    New to SkyWays? <a href="#" class="text-primary hover:underline" onclick="toggleAuthMode('register')">Register Account</a>
+                </p>
+            </form>
+
+            <!-- Forgot Password Form (Hidden by default) -->
+            <form id="auth-forgot-form" onsubmit="handleAuthForgot(event)" class="space-y-4 hidden">
+                <div class="space-y-1">
+                    <label class="text-label-caps text-on-surface-variant block text-[10px]">Email Address</label>
+                    <input id="auth-forgot-email" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="email" placeholder="manager@skyways.com" required/>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-label-caps text-on-surface-variant block text-[10px]">Phone Number</label>
+                    <input id="auth-forgot-phone" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="tel" placeholder="1234567890" required/>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant block text-[10px]">Security Question</label>
+                        <select id="auth-forgot-question" class="w-full glass-input rounded-xl py-2 px-3 text-body-sm text-on-surface bg-surface-variant/20" required>
+                            <option value="" disabled selected>Select question</option>
+                            <option value="city">City in which you were born</option>
+                            <option value="teacher">Name of your favorite teacher</option>
+                            <option value="food">Your favorite food</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant block text-[10px]">Security Answer</label>
+                        <input id="auth-forgot-answer" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="text" required placeholder="Your answer"/>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-label-caps text-on-surface-variant block text-[10px]">New Password</label>
+                    <input id="auth-forgot-newpassword" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="password" required placeholder="••••••••"/>
+                </div>
+                <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-semibold text-body-md mt-2 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                    Reset & Update Password
+                </button>
+                <p class="text-center text-body-md text-on-surface-variant">
+                    Remember password? <a href="#" class="text-primary hover:underline" onclick="toggleAuthMode('login')">Log In</a>
+                </p>
+            </form>
+
+            <!-- Register Form (Hidden by default) -->
+            <form id="auth-register-form" onsubmit="handleAuthRegister(event)" class="space-y-4 hidden">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant block text-[10px]">First Name</label>
+                        <input id="auth-reg-firstname" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="text" required/>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant block text-[10px]">Last Name</label>
+                        <input id="auth-reg-lastname" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="text" required/>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-label-caps text-on-surface-variant block text-[10px]">Username</label>
+                    <input id="auth-reg-username" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="text" placeholder="e.g. sophia_r" required/>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-label-caps text-on-surface-variant block text-[10px]">Email Address</label>
+                    <input id="auth-reg-email" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="email" placeholder="manager@skyways.com" required/>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant block text-[10px]">Phone Number</label>
+                        <input id="auth-reg-phone" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="tel" placeholder="1234567890" required/>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant block text-[10px]">Password</label>
+                        <input id="auth-reg-password" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="password" required/>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant block text-[10px]">Security Question</label>
+                        <select id="auth-reg-question" class="w-full glass-input rounded-xl py-2 px-3 text-body-sm text-on-surface bg-surface-variant/20" required>
+                            <option value="" disabled selected>Select question</option>
+                            <option value="city">City in which you were born</option>
+                            <option value="teacher">Name of your favorite teacher</option>
+                            <option value="food">Your favorite food</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant block text-[10px]">Security Answer</label>
+                        <input id="auth-reg-answer" class="w-full glass-input rounded-xl py-2 px-3 text-body-md text-on-surface" type="text" required placeholder="Your answer"/>
+                    </div>
+                </div>
+                <!-- User Profile Image Upload -->
+                <div class="flex flex-col items-center gap-2 mb-2">
+                    <div class="relative group cursor-pointer" onclick="document.getElementById('auth-reg-image').click()">
+                        <div id="auth-reg-image-preview" class="w-20 h-20 rounded-full border-2 border-dashed border-outline-variant/50 flex items-center justify-center overflow-hidden bg-surface-container-highest/30 group-hover:border-primary/60 transition-all">
+                            <span id="auth-reg-image-placeholder" class="material-symbols-outlined text-3xl text-on-surface-variant/50 group-hover:text-primary/70 transition-colors">add_a_photo</span>
+                            <img id="auth-reg-image-thumb" class="w-full h-full object-cover hidden" alt="Preview"/>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-background">
+                            <span class="material-symbols-outlined text-[12px] text-white">edit</span>
+                        </div>
+                    </div>
+                    <p class="text-label-caps text-on-surface-variant text-[10px]">Click to upload profile photo</p>
+                    <input type="file" id="auth-reg-image" accept="image/*" class="hidden" onchange="previewRegisterImage(this)"/>
+                </div>
+                <button type="submit" class="w-full btn-primary text-white py-3.5 rounded-xl font-semibold text-body-md mt-2 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                    Create New Account
+                </button>
+                <p class="text-center text-body-md text-on-surface-variant">
+                    Already have an account? <a href="#" class="text-primary hover:underline" onclick="toggleAuthMode('login')">Log In</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script imports -->
+    <script src="{% static 'app.js' %}?v=1.0.8"></script>
+</body>
+</html>

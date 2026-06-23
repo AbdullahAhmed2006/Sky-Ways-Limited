@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SkyWays Fleet Control - Booking Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#dbe3f4",
+                        "on-tertiary": "#472a00",
+                        "inverse-surface": "#dbe3f4",
+                        "on-surface": "#dbe3f4",
+                        "surface-container-lowest": "#070e1a",
+                        "outline-variant": "#3d494c",
+                        "on-surface-variant": "#bcc9cd",
+                        "secondary-container": "#00a572",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-variant": "#2d3542",
+                        "surface-container-low": "#141c28",
+                        "surface-container": "#18202c",
+                        "on-primary-fixed": "#001f26",
+                        "surface-bright": "#323947",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-secondary-fixed-variant": "#005236",
+                        "outline": "#869397",
+                        "tertiary": "#ffb95f",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-primary": "#003640",
+                        "background": "#0c1420",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-secondary-fixed": "#002113",
+                        "surface-tint": "#4cd7f6",
+                        "on-primary-fixed-variant": "#004e5c",
+                        "on-error-container": "#ffdad6",
+                        "inverse-primary": "#00687a",
+                        "secondary-fixed": "#6ffbbe",
+                        "primary-fixed": "#acedff",
+                        "primary": "#4cd7f6",
+                        "on-tertiary-container": "#563400",
+                        "primary-container": "#06b6d4",
+                        "surface-container-highest": "#2d3542",
+                        "primary-fixed-dim": "#4cd7f6",
+                        "on-secondary-container": "#00311f",
+                        "surface": "#0c1420",
+                        "tertiary-container": "#e79400",
+                        "secondary": "#4edea3",
+                        "surface-dim": "#0c1420",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005",
+                        "on-secondary": "#003824",
+                        "surface-container-high": "#232a37",
+                        "on-primary-container": "#00424f",
+                        "inverse-on-surface": "#29313e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "0.5rem",
+                        "container-margin": "2rem",
+                        "card-padding": "1.25rem",
+                        "sidebar-width": "280px",
+                        "gutter": "1.5rem",
+                        "stack-md": "1rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "metric-value": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "500"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "metric-value": ["28px", {"lineHeight": "34px", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            border-color: #4cd7f6;
+            box-shadow: 0 0 15px rgba(76, 215, 246, 0.2);
+            outline: none;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #00687a, #004e5c);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(76, 215, 246, 0.4);
+            transform: translateY(-1px);
+        }
+        .cyber-glow {
+            text-shadow: 0 0 10px rgba(76, 215, 246, 0.5);
+        }
+        .vehicle-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .vehicle-card:hover, .vehicle-card.active {
+            border-color: #4cd7f6;
+            background: linear-gradient(135deg, rgba(76, 215, 246, 0.1) 0%, rgba(255, 255, 255, 0.01) 100%);
+            box-shadow: inset 0 0 20px rgba(76, 215, 246, 0.1);
+        }
+        .ambient-bg {
+            background: radial-gradient(circle at 50% 0%, rgba(76, 215, 246, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, rgba(78, 222, 163, 0.05) 0%, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen ambient-bg overflow-x-hidden">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 bottom-0 z-50 flex flex-col py-8 docked left-0 h-full w-[280px] bg-surface dark:bg-surface border-r border-outline-variant/20 backdrop-blur-3xl flat no shadows text-primary dark:text-primary">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-on-surface dark:text-on-surface">SkyWays</h1>
+<p class="text-label-caps font-label-caps text-on-surface-variant">Fleet Control</p>
+</div>
+</div>
+<div class="px-6 mb-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant/50">OPERATIONS</span>
+</div>
+<ul class="flex-1 space-y-2 Headlines: text-headline-md font-headline-md. Labels: text-label-caps font-label-caps">
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-6 py-4 transition-colors hover:bg-surface-container-highest/10" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-6 py-4 transition-colors hover:bg-surface-container-highest/10" href="#">
+<span class="material-symbols-outlined">directions_bus</span>
+<span class="font-body-md">Vehicles</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-6 py-4 transition-colors hover:bg-surface-container-highest/10" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-md">Drivers</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-6 py-4 transition-colors hover:bg-surface-container-highest/10" href="#">
+<span class="material-symbols-outlined">route</span>
+<span class="font-body-md">Routes &amp; Trips</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 bg-gradient-to-r from-primary/10 to-transparent text-primary font-bold border-l-4 border-primary px-6 py-4 scale-95 transition-transform duration-150 relative" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-body-md">Booking Portal</span>
+<div class="absolute right-4 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(76,215,246,0.8)]"></div>
+</a>
+</li>
+</ul>
+<div class="mt-auto pt-8 border-t border-outline-variant/10">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-6 py-4 transition-colors hover:bg-surface-container-highest/10 mb-4" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<div class="px-6">
+<div class="glass-card rounded-xl p-3 flex items-center justify-between hover:bg-surface-variant/30 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<img alt="Sofia Ramirez" class="w-10 h-10 rounded-full border border-outline-variant/30" data-alt="A small, circular avatar portrait of a professional fleet manager named Sofia Ramirez. She has dark hair and a professional demeanor, set against a dark, moody background typical of a high-tech command center interface. The portrait is sharply focused and modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDS5Y9O_ik9yMplMwzK9H-6lVmUJI56PPXhcot-1vb0-3F0wJCFN5MF1vzvoHaAhKdfc55ph3pRl42rrLzqAe51e0Q6gC99cjdjFOCw-XtKBAmLjZe8LX4NiXvpUn9FDY2aMYVxyjzyuuZJ6CHTlJWNXZwn8FOSvkssjRzNSZgSfsCbOtZZU3T8TFj8BxjpmDQml5fvzs_ixWvO1VYp38azeagP4-2rkPwAAOHN3Uavekx6OcJxyiz3XrcolKO6TQkvSbBUYXehxmY"/>
+<div>
+<p class="font-body-md font-medium text-on-surface">Sofia Ramirez</p>
+<p class="text-label-caps font-label-caps text-on-surface-variant">Fleet Manager</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">logout</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="ml-[280px] min-h-screen flex flex-col relative z-10">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-container-margin py-stack-md sticky top-0 z-40 backdrop-blur-md bg-transparent flat no shadows text-primary dark:text-primary">
+<div>
+<h2 class="text-headline-lg font-headline-lg font-bold text-on-surface">Booking Portal</h2>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1">Reserve a vehicle for your journey</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="w-64 glass-input rounded-full py-2 pl-10 pr-4 text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 ring-primary/50 transition-all" placeholder="Search fleet..." type="text"/>
+</div>
+<button class="w-10 h-10 rounded-full glass-card flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-variant/20 transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-error shadow-[0_0_8px_rgba(255,180,171,0.6)]"></span>
+</button>
+</div>
+</header>
+<!-- Dashboard Content Grid -->
+<div class="p-container-margin flex-1 grid grid-cols-12 gap-6 items-start">
+<!-- Left Column: Booking Form -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<div class="glass-card rounded-2xl p-8 relative overflow-hidden">
+<div class="absolute -top-24 -left-24 w-48 h-48 bg-primary/20 rounded-full blur-[80px]"></div>
+<h3 class="text-headline-lg font-headline-lg font-bold text-primary cyber-glow mb-2 relative z-10">Book Your Trip</h3>
+<p class="text-body-lg font-body-lg text-on-surface-variant mb-8 relative z-10">Reserve a SkyWays vehicle for your journey in few simple steps.</p>
+<!-- Form Inputs -->
+<div class="grid grid-cols-2 gap-6 mb-8 relative z-10">
+<!-- Pick-up -->
+<div class="space-y-2">
+<label class="text-label-caps font-label-caps text-on-surface-variant block">Pick-up Point</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary">near_me</span>
+<input class="w-full glass-input rounded-xl py-4 pl-12 pr-4 text-body-lg text-on-surface" type="text" value="Central Station"/>
+</div>
+</div>
+<!-- Destination -->
+<div class="space-y-2">
+<label class="text-label-caps font-label-caps text-on-surface-variant block">Destination</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-error">location_on</span>
+<input class="w-full glass-input rounded-xl py-4 pl-12 pr-4 text-body-lg text-on-surface" type="text" value="Airport Terminal 3"/>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-6 mb-10 relative z-10">
+<!-- Date -->
+<div class="space-y-2">
+<label class="text-label-caps font-label-caps text-on-surface-variant block">Date</label>
+<div class="relative">
+<input class="w-full glass-input rounded-xl py-4 pl-4 pr-10 text-body-lg text-on-surface [color-scheme:dark]" type="date"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">calendar_today</span>
+</div>
+</div>
+<!-- Time -->
+<div class="space-y-2">
+<label class="text-label-caps font-label-caps text-on-surface-variant block">Time</label>
+<div class="relative">
+<input class="w-full glass-input rounded-xl py-4 pl-4 pr-10 text-body-lg text-on-surface [color-scheme:dark]" type="time"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">schedule</span>
+</div>
+</div>
+<!-- Passengers -->
+<div class="space-y-2">
+<label class="text-label-caps font-label-caps text-on-surface-variant block">Passengers</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">group</span>
+<input class="w-full glass-input rounded-xl py-4 pl-12 pr-4 text-body-lg text-on-surface" min="1" type="number" value="1"/>
+</div>
+</div>
+</div>
+<!-- Vehicle Preference -->
+<div class="relative z-10">
+<label class="text-label-caps font-label-caps text-on-surface-variant block mb-4">Vehicle Preference</label>
+<div class="grid grid-cols-4 gap-4">
+<!-- Card 1 -->
+<div class="glass-card rounded-xl p-4 vehicle-card active relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-tertiary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(255,185,95,0.8)]"></div>
+<span class="text-label-caps font-label-caps text-on-surface">25 Seats</span>
+</div>
+<span class="material-symbols-outlined text-tertiary text-sm">directions_bus</span>
+</div>
+<div class="h-24 bg-[url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&amp;fit=crop&amp;q=80&amp;w=300')] bg-cover bg-center rounded-lg mb-4 opacity-70 mix-blend-luminosity group-hover:mix-blend-normal transition-all" data-alt="A sleek, modern luxury coach bus viewed from a slight angle. It is painted in a metallic finish, reflecting futuristic neon lighting from its surroundings. The lighting is dark and cinematic, emphasizing the high-tech, premium nature of the transport vehicle."></div>
+<p class="text-body-md font-medium text-center text-on-surface">Luxury Coach</p>
+</div>
+<!-- Card 2 -->
+<div class="glass-card rounded-xl p-4 vehicle-card relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(76,215,246,0.8)]"></div>
+<span class="text-label-caps font-label-caps text-on-surface">35 Seats</span>
+</div>
+<span class="material-symbols-outlined text-primary text-sm">airport_shuttle</span>
+</div>
+<div class="h-24 bg-[url('https://images.unsplash.com/photo-1464219789935-c2d9d9aba644?auto=format&amp;fit=crop&amp;q=80&amp;w=300')] bg-cover bg-center rounded-lg mb-4 opacity-70 mix-blend-luminosity group-hover:mix-blend-normal transition-all" data-alt="A modern airport express shuttle bus shown in a slightly dim, urban environment. The bus has a streamlined design and large windows, glowing slightly under streetlights, fitting a cyberpunk or advanced modern transport aesthetic."></div>
+<p class="text-body-md font-medium text-center text-on-surface">Express Shuttle</p>
+</div>
+<!-- Card 3 -->
+<div class="glass-card rounded-xl p-4 vehicle-card relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(78,222,163,0.8)]"></div>
+<span class="text-label-caps font-label-caps text-on-surface">10 Seats</span>
+</div>
+<span class="material-symbols-outlined text-secondary text-sm">commute</span>
+</div>
+<div class="h-24 bg-[url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&amp;fit=crop&amp;q=80&amp;w=300')] bg-cover bg-center rounded-lg mb-4 opacity-70 mix-blend-luminosity group-hover:mix-blend-normal transition-all" data-alt="A compact, futuristic mini-bus or large passenger van. It features clean lines and a dark, glossy exterior, illuminated by subtle cool-toned lights, presenting a professional and highly efficient mode of group transport."></div>
+<p class="text-body-md font-medium text-center text-on-surface">Mini Bus</p>
+</div>
+<!-- Card 4 -->
+<div class="glass-card rounded-xl p-4 vehicle-card relative flex flex-col items-center justify-center group">
+<div class="w-12 h-12 rounded-full bg-surface-variant/50 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">shuffle</span>
+</div>
+<p class="text-body-md font-medium text-center text-on-surface-variant group-hover:text-primary">No Preference</p>
+</div>
+</div>
+</div>
+<!-- Confirm Button Area -->
+<div class="mt-12 flex justify-center relative z-10">
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+<button class="relative btn-primary px-16 py-4 rounded-xl flex items-center gap-3">
+<span class="text-headline-md font-headline-md font-bold text-white tracking-wide">Confirm Booking</span>
+<span class="material-symbols-outlined text-white">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Info Cards -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<!-- Why SkyWays -->
+<div class="glass-card rounded-2xl p-6 border-t-2 border-t-primary/50 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[40px] translate-x-1/2 -translate-y-1/2"></div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-lg bg-surface-variant/50 border border-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">verified_user</span>
+</div>
+<h4 class="text-headline-md font-headline-md font-semibold text-on-surface">Why SkyWays?</h4>
+</div>
+<p class="text-body-md text-on-surface-variant mb-6">Premium fleet, real-time tracking, and reliable arrivals across the city.</p>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-xl mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-body-md text-on-surface">Live GPS trip tracking</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-xl mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-body-md text-on-surface">Verified professional drivers</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-xl mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-body-md text-on-surface">Flexible cancellation</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-xl mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-body-md text-on-surface">24/7 passenger support</span>
+</li>
+</ul>
+</div>
+<!-- Group Booking Callout -->
+<div class="glass-card rounded-2xl p-6 bg-gradient-to-br from-surface-variant/40 to-transparent relative overflow-hidden group cursor-pointer hover:border-outline-variant transition-colors">
+<div class="flex justify-between items-start mb-4">
+<h4 class="text-headline-md font-headline-md font-semibold text-on-surface">Need a group booking?</h4>
+<div class="w-10 h-10 rounded-full glass-input flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">groups</span>
+</div>
+</div>
+<p class="text-body-md text-on-surface-variant mb-6 pr-8">For 25+ passengers, our team arranges dedicated coaches and custom routes.</p>
+<div class="flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
+<span>Contact fleet desk</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+<div class="absolute -bottom-4 -right-4 w-32 h-32 opacity-20 group-hover:opacity-40 transition-opacity mix-blend-screen bg-[url('https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&amp;fit=crop&amp;q=80&amp;w=200')] bg-contain bg-no-repeat" data-alt="A stylized, translucent 3D render of a large commercial coach bus. It appears almost like a wireframe or a glowing holographic projection, reinforcing the advanced, tech-forward nature of the fleet management system."></div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple interaction for vehicle cards
+        document.querySelectorAll('.vehicle-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.vehicle-card').forEach(c => c.classList.remove('active', 'border-primary', 'shadow-[inset_0_0_20px_rgba(76,215,246,0.1)]'));
+                card.classList.add('active');
+            });
+        });
+    </script>
+</body></html>
