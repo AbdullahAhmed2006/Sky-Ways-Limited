@@ -417,6 +417,9 @@ async function fetchBackendData() {
                 state.managerPic = userObj.profile_image || userObj.profile_pic || DEFAULT_STATE.managerPic;
             } else {
                 state.managerPic = DEFAULT_STATE.managerPic;
+            }
+        }
+
         // Instant UI view update
         const activeHash = window.location.hash || "#dashboard";
         if (activeHash === "#dashboard") renderDashboard();
