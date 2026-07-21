@@ -254,109 +254,46 @@ async function fetchBackendData() {
         let dbBookings = [];
         let dbRoutes = [];
 
-        // 1. Fetch Bookings
-        try {
-            const resBookings = await fetch('/api/v1/trips/bookings/', {
-                headers: { 'Authorization': `Bearer ${jwtToken}` }
-            });
-            if (resBookings.status === 401) {
-                logout();
-                return;
-            }
-            if (resBookings.ok) {
-                dbBookings = await resBookings.json();
-                state.bookings = dbBookings;
-            }
-        } catch (e) { console.error("Failed to fetch bookings", e); }
+        const headers = { 'Authorization': `Bearer ${jwtToken}` };
 
-        // 2. Fetch Routes
-        try {
-            const resRoutes = await fetch('/api/v1/trips/routes/', {
-                headers: { 'Authorization': `Bearer ${jwtToken}` }
-            });
-            if (resRoutes.status === 401) {
-                logout();
-                return;
-            }
-            if (resRoutes.ok) {
-                dbRoutes = await resRoutes.json();
-                state.routes = dbRoutes;
-            }
-        } catch (e) { console.error("Failed to fetch routes", e); }
+        // Fetch all REST API resources in PARALLEL via Promise.all (Sub-second loading)
+        const fetchPromises = [
+            fetch('/api/v1/trips/bookings/', { headers }),
+            fetch('/api/v1/trips/routes/', { headers }),
+            fetch('/api/v1/trips/trips/', { headers })
+        ];
 
-        // 3. Fetch Trips
-        try {
-            const resTrips = await fetch('/api/v1/trips/trips/', {
-                headers: { 'Authorization': `Bearer ${jwtToken}` }
-            });
-            if (resTrips.status === 401) {
-                logout();
-                return;
-            }
-            if (resTrips.ok) {
-                dbTrips = await resTrips.json();
-            }
-        } catch (e) { console.error("Failed to fetch trips", e); }
-
-        // 4. Fetch Vehicles
         if (role !== "passenger") {
-            try {
-                const resVehicles = await fetch('/api/v1/fleet/vehicles/', {
-                    headers: { 'Authorization': `Bearer ${jwtToken}` }
-                });
-                if (resVehicles.ok) {
-                    dbVehicles = await resVehicles.json();
-                }
-            } catch (e) { console.error("Failed to fetch vehicles", e); }
+            fetchPromises.push(fetch('/api/v1/fleet/vehicles/', { headers }));
+            fetchPromises.push(fetch('/api/v1/fleet/drivers/', { headers }));
         }
-
-        // 5. Fetch Drivers
-        if (role !== "passenger") {
-            try {
-                const resDrivers = await fetch('/api/v1/fleet/drivers/', {
-                    headers: { 'Authorization': `Bearer ${jwtToken}` }
-                });
-                if (resDrivers.ok) {
-                    dbDrivers = await resDrivers.json();
-                }
-            } catch (e) { console.error("Failed to fetch drivers", e); }
-        }
-
-        // 6. Fetch Users
         if (role === "admin" || role === "dispatcher") {
-            try {
-                const resUsers = await fetch('/api/v1/users/', {
-                    headers: { 'Authorization': `Bearer ${jwtToken}` }
-                });
-                if (resUsers.ok) {
-                    dbUsers = await resUsers.json();
-                }
-            } catch (e) { console.error("Failed to fetch users", e); }
+            fetchPromises.push(fetch('/api/v1/users/', { headers }));
+            fetchPromises.push(fetch('/api/v1/operations/revenues/', { headers }));
+            fetchPromises.push(fetch('/api/v1/operations/expenses/', { headers }));
         }
 
-        // 7. Fetch Revenues (admin/dispatcher only)
-        if (role === "admin" || role === "dispatcher") {
-            try {
-                const resRevenues = await fetch('/api/v1/operations/revenues/', {
-                    headers: { 'Authorization': `Bearer ${jwtToken}` }
-                });
-                if (resRevenues.ok) {
-                    state.revenues = await resRevenues.json();
-                }
-            } catch (e) { console.error("Failed to fetch revenues", e); }
-        }
+        const responses = await Promise.all(fetchPromises);
 
-        // 8. Fetch Expenses (admin/dispatcher only)
-        if (role === "admin" || role === "dispatcher") {
-            try {
-                const resExpenses = await fetch('/api/v1/operations/expenses/', {
-                    headers: { 'Authorization': `Bearer ${jwtToken}` }
-                });
-                if (resExpenses.ok) {
-                    state.expenses = await resExpenses.json();
-                }
-            } catch (e) { console.error("Failed to fetch expenses", e); }
-        }
+        let idx = 0;
+        const resBookings = responses[idx++];
+        const resRoutes = responses[idx++];
+        const resTrips = responses[idx++];
+        
+        const resVehicles = (role !== "passenger") ? responses[idx++] : null;
+        const resDrivers = (role !== "passenger") ? responses[idx++] : null;
+        const resUsers = (role === "admin" || role === "dispatcher") ? responses[idx++] : null;
+        const resRevenues = (role === "admin" || role === "dispatcher") ? responses[idx++] : null;
+        const resExpenses = (role === "admin" || role === "dispatcher") ? responses[idx++] : null;
+
+        if (resBookings && resBookings.ok) state.bookings = await resBookings.json();
+        if (resRoutes && resRoutes.ok) state.routes = await resRoutes.json();
+        if (resTrips && resTrips.ok) dbTrips = await resTrips.json();
+        if (resVehicles && resVehicles.ok) dbVehicles = await resVehicles.json();
+        if (resDrivers && resDrivers.ok) dbDrivers = await resDrivers.json();
+        if (resUsers && resUsers.ok) dbUsers = await resUsers.json();
+        if (resRevenues && resRevenues.ok) state.revenues = await resRevenues.json();
+        if (resExpenses && resExpenses.ok) state.expenses = await resExpenses.json();
 
         // If database is empty, seed it with default state (admin only)
         if ((role === "admin" || role === "dispatcher") && dbVehicles.length === 0 && dbDrivers.length === 0) {
