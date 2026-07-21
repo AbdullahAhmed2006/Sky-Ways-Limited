@@ -1007,6 +1007,8 @@ function routeTo(hash) {
         }
     });
 
+    refreshUILayout();
+
     document.querySelectorAll("aside nav a, nav a").forEach(link => {
         const href = link.getAttribute("href");
         if (href === `#${sectionId}`) {
@@ -6151,7 +6153,8 @@ window.handleAuthLogin = async function(event) {
 
             showToast(`Welcome back, ${username}! Login successful.`, "success");
             await fetchBackendData();
-            initApp();
+            let defaultHash = (selectedRole === "passenger") ? "#booking" : (selectedRole === "driver" ? "#drivers" : "#dashboard");
+            routeTo(window.location.hash || defaultHash);
         } else {
             showToast("Invalid credentials. Please check your username and password.", "error");
         }
