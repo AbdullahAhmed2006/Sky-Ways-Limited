@@ -417,8 +417,15 @@ async function fetchBackendData() {
                 state.managerPic = userObj.profile_image || userObj.profile_pic || DEFAULT_STATE.managerPic;
             } else {
                 state.managerPic = DEFAULT_STATE.managerPic;
-            }
-        }
+        // Instant UI view update
+        const activeHash = window.location.hash || "#dashboard";
+        if (activeHash === "#dashboard") renderDashboard();
+        else if (activeHash === "#vehicles") renderVehicles();
+        else if (activeHash === "#drivers") renderDrivers();
+        else if (activeHash === "#routes") renderRoutes();
+        else if (activeHash === "#tickets") renderTickets();
+        else if (activeHash === "#analytics") renderAnalytics();
+        else if (activeHash === "#incidents") renderIncidents();
 
     } catch (err) {
         console.error("Error fetching and mapping data from Django DB, falling back to local simulation data:", err);
