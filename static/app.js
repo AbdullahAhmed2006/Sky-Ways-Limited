@@ -6045,3 +6045,122 @@ function saveMockState() {
     localStorage.setItem("skyways_mock_expenses", JSON.stringify(state.expenses || []));
     localStorage.setItem("skyways_mock_revenues", JSON.stringify(state.revenues || []));
 }
+
+// Authentication Modal Handler Functions
+window.selectAuthRole = function(role) {
+    const roleInput = document.getElementById('auth-selected-role');
+    if (roleInput) roleInput.value = role;
+
+    ['passenger', 'driver', 'admin'].forEach(r => {
+        const btn = document.getElementById(`role-tab-${r}`);
+        if (btn) {
+            if (r === role) {
+                btn.className = "role-tab px-2 py-2 rounded-lg font-semibold text-xs tracking-wider uppercase text-primary bg-primary/10 border border-primary/20";
+            } else {
+                btn.className = "role-tab px-2 py-2 rounded-lg font-semibold text-xs tracking-wider uppercase text-on-surface-variant hover:text-white";
+            }
+        }
+    });
+};
+
+window.toggleAuthMode = function(mode) {
+    const loginForm = document.getElementById('auth-login-form');
+    const registerForm = document.getElementById('auth-register-form');
+    const forgotForm = document.getElementById('auth-forgot-form');
+
+    if (loginForm) loginForm.classList.add('hidden');
+    if (registerForm) registerForm.classList.add('hidden');
+    if (forgotForm) forgotForm.classList.add('hidden');
+
+    if (mode === 'login' && loginForm) loginForm.classList.remove('hidden');
+    else if (mode === 'register' && registerForm) registerForm.classList.remove('hidden');
+    else if (mode === 'forgot' && forgotForm) forgotForm.classList.remove('hidden');
+};
+
+window.handleAuthLogin = async function(event) {
+    event.preventDefault();
+    const usernameInput = document.getElementById('auth-login-username');
+    const passwordInput = document.getElementById('auth-login-password');
+    const roleInput = document.getElementById('auth-selected-role');
+
+    const username = usernameInput ? usernameInput.value.trim() : '';
+    const password = passwordInput ? passwordInput.value : '';
+    const selectedRole = roleInput ? roleInput.value : 'passenger';
+
+    if (!username || !password) {
+        showToast("Please enter both username and password.", "error");
+        return;
+    }
+
+    try {
+        const resp = await fetch('/api/token/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (resp.ok) {
+            const data = await resp.json();
+            jwtToken = data.access;
+            state.username = username;
+            state.userRole = selectedRole;
+            
+            // Hide Auth Overlay
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) overlay.classList.add('hidden');
+
+            showToast(`Welcome back, ${username}! Login successful.`, "success");
+            await fetchBackendData();
+            initApp();
+        } else {
+            showToast("Invalid credentials. Please check your username and password.", "error");
+        }
+    } catch (err) {
+        console.error("Login request failed:", err);
+        showToast("Server connection error. Please try again.", "error");
+    }
+};
+
+window.handleAuthRegister = async function(event) {
+    event.preventDefault();
+    const firstName = document.getElementById('auth-reg-firstname')?.value || '';
+    const lastName = document.getElementById('auth-reg-lastname')?.value || '';
+    const username = document.getElementById('auth-reg-username')?.value || '';
+    const email = document.getElementById('auth-reg-email')?.value || '';
+    const phone = document.getElementById('auth-reg-phone')?.value || '';
+    const password = document.getElementById('auth-reg-password')?.value || '';
+    const role = document.getElementById('auth-selected-role')?.value || 'passenger';
+
+    try {
+        const resp = await fetch('/api/v1/users/register/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username,
+                email,
+                password,
+                first_name: firstName,
+                last_name: lastName,
+                phone_number: phone,
+                role
+            })
+        });
+
+        if (resp.ok) {
+            showToast("Account created successfully! Please log in.", "success");
+            toggleAuthMode('login');
+        } else {
+            const errData = await resp.json();
+            showToast(errData.detail || "Registration failed. Check inputs.", "error");
+        }
+    } catch (err) {
+        console.error("Register request failed:", err);
+        showToast("Registration error.", "error");
+    }
+};
+
+window.handleAuthForgot = function(event) {
+    event.preventDefault();
+    showToast("Password reset request submitted. Contact administrator.", "info");
+    toggleAuthMode('login');
+};
