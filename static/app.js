@@ -4542,10 +4542,17 @@ function renderTickets() {
     const list = state.bookings.filter(b => {
         if (isPassenger) {
             const pName = (b.passenger_name || "").toLowerCase();
-            return (passengerName && pName.includes(passengerName)) || 
-                   (username && pName.includes(username)) || 
-                   pName.includes("customer / portal") || 
-                   pName.includes("portal booking");
+            const currUser = state.currentUser;
+            const fullUser = currUser ? `${currUser.first_name || ""} ${currUser.last_name || ""}`.trim().toLowerCase() : "";
+            const currentUName = (state.username || "").toLowerCase();
+
+            return (
+                (fullUser && pName.includes(fullUser)) ||
+                (currentUName && pName.includes(currentUName)) ||
+                pName.includes("customer / portal") ||
+                pName.includes("portal booking") ||
+                (b.passenger_name && b.passenger_name.trim() !== "")
+            );
         }
         return true;
     });
@@ -6137,7 +6144,13 @@ window.handleAuthRegister = async function(event) {
     const email = document.getElementById('auth-reg-email')?.value || '';
     const phone = document.getElementById('auth-reg-phone')?.value || '';
     const password = document.getElementById('auth-reg-password')?.value || '';
-    const role = document.getElementById('auth-selected-role')?.value || 'passenger';
+    let role = document.getElementById('auth-selected-role')?.value || 'passenger';
+
+    // Restrict Signup: New accounts cannot be registered as Admin/Manager
+    if (role === 'admin') {
+        showToast("Manager / Admin signup is restricted. Only existing Admin accounts can log in.", "error");
+        return;
+    }
 
     try {
         const resp = await fetch('/api/v1/users/register/', {
