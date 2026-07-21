@@ -1523,7 +1523,8 @@ function renderDashboard() {
             return (passengerName && pName.includes(passengerName)) || 
                    (username && pName.includes(username)) || 
                    pName.includes("customer / portal") || 
-                   pName.includes("portal booking");
+                   pName.includes("portal booking") ||
+                   (b.passenger_name && b.passenger_name.trim() !== "");
         });
 
         // Latest active booking
