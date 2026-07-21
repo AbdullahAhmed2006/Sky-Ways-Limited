@@ -13,11 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "replace-this-with-a-secure-key")
 
-# DEBUG mode – set to False in production
-DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
+# DEBUG mode – set to False in production by default or via env
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
 # Hosts/domain names that are valid for this site
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost 127.0.0.1").split()
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", ".vercel.app localhost 127.0.0.1").split()
 
 # Application definition
 INSTALLED_APPS = [
