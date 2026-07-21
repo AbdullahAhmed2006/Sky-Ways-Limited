@@ -6108,6 +6108,11 @@ window.handleAuthLogin = async function(event) {
             state.username = username;
             state.userRole = selectedRole;
             
+            // Persist session across page reloads & navigation
+            localStorage.setItem("skyways_jwt_token", jwtToken);
+            localStorage.setItem("skyways_user_role", selectedRole);
+            localStorage.setItem("skyways_username", username);
+            
             // Hide Auth Overlay
             const overlay = document.getElementById('auth-overlay');
             if (overlay) overlay.classList.add('hidden');
