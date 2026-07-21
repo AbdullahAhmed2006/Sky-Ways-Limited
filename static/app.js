@@ -705,7 +705,7 @@ function saveLocalSettings() {
     localStorage.setItem("skyways_alerts", JSON.stringify(state.alerts));
 }
 
-let notificationSocket = null;
+let notificationSocket = null;// Establish Real-Time WebSocket Connection (or HTTP Polling Fallback on Vercel)
 function initWebSocket() {
     if (notificationSocket) {
         try {
@@ -719,11 +719,25 @@ function initWebSocket() {
         return;
     }
 
+    // Vercel Serverless environment check: Disable WebSocket infinite reconnect loop
+    const isVercel = window.location.hostname.includes("vercel.app");
+    if (isVercel) {
+        console.log("Vercel deployment detected (Serverless environment without persistent WS). Switching to HTTP polling fallback.");
+        startPollingFallback();
+        return;
+    }
+
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
     const wsUrl = `${wsScheme}://${window.location.host}/ws/notifications/`;
     
     console.log("Connecting to WebSocket:", wsUrl);
-    notificationSocket = new WebSocket(wsUrl);
+    try {
+        notificationSocket = new WebSocket(wsUrl);
+    } catch (e) {
+        console.warn("WebSocket initialization failed:", e);
+        startPollingFallback();
+        return;
+    }
 
     notificationSocket.onmessage = async function(e) {
         try {
@@ -743,7 +757,6 @@ function initWebSocket() {
             const currentDriverId = currentDriverProfile ? currentDriverProfile.id : "";
 
             if (data.type === "booking_created") {
-                // If current user is the driver assigned to this booking
                 const isAssignedDriver = (
                     (data.driver_pk && currentDriverPk && data.driver_pk === currentDriverPk) ||
                     (data.driver_id && currentDriverId && data.driver_id === currentDriverId)
@@ -755,13 +768,11 @@ function initWebSocket() {
                     addNotification("New Ticket Booked", `Passenger ${data.passenger_name} booked a ticket on vehicle ${data.vehicle_id} (Route: ${data.pickup_point} to ${data.destination}).`);
                 }
             } else if (data.type === "trip_dispatched") {
-                // If current user is the driver assigned to this trip
                 const isAssignedDriver = (
                     (data.driver_pk && currentDriverPk && data.driver_pk === currentDriverPk) ||
                     (data.driver_id && currentDriverId && data.driver_id === currentDriverId)
                 );
 
-                // If current user is the passenger of this trip
                 let isPassengerTrip = false;
                 if (role === "passenger" && data.booking_id) {
                     const matchedBooking = state.bookings.find(b => b.id === data.booking_id);
@@ -785,7 +796,6 @@ function initWebSocket() {
                 }
             }
 
-            // Dynamically refresh the current view
             const activeHash = window.location.hash || "#dashboard";
             if (activeHash === "#dashboard") {
                 renderDashboard();
@@ -802,18 +812,28 @@ function initWebSocket() {
     };
 
     notificationSocket.onclose = function(e) {
-        console.log("WebSocket closed. Attempting reconnect in 5 seconds...", e.reason);
-        setTimeout(function() {
-            initWebSocket();
-        }, 5000);
+        console.log("WebSocket connection closed.", e.reason);
+        // Fall back to clean HTTP polling instead of crashing in infinite retry loop
+        startPollingFallback();
     };
 
     notificationSocket.onerror = function(err) {
-        console.error("WebSocket encountered error: Closing socket");
+        console.warn("WebSocket unavailable on this environment. Switching to HTTP polling.");
         try {
             notificationSocket.close();
         } catch(e) {}
     };
+}
+
+let pollingInterval = null;
+function startPollingFallback() {
+    if (pollingInterval) return;
+    console.log("HTTP background polling active (syncing every 12 seconds).");
+    pollingInterval = setInterval(async () => {
+        if (jwtToken && !jwtToken.startsWith("mock_")) {
+            await fetchBackendData();
+        }
+    }, 12000);
 }
 
 // Initialize Application
