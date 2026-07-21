@@ -1,10 +1,9 @@
 # settings.py
-import pymysql
-pymysql.install_as_MySQLdb()
 """Django settings for the SkyWays project.
-Generated automatically for a production‑ready backend using MySQL and JWT authentication.
+Generated automatically for a production‑ready backend using Supabase (PostgreSQL) and JWT authentication.
 """
 import os
+import dj_database_url
 from pathlib import Path
 
 # Base directory (project root)
@@ -17,7 +16,15 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "replace-this-with-a-secure-key")
 DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
 # Hosts/domain names that are valid for this site
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", ".vercel.app localhost 127.0.0.1").split()
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split()
+if ".vercel.app" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(".vercel.app")
+if "localhost" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append("localhost")
+if "127.0.0.1" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append("127.0.0.1")
+if "10.0.2.2" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append("10.0.2.2")
 
 # Application definition
 INSTALLED_APPS = [
@@ -81,12 +88,13 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 WSGI_APPLICATION = "skyways.wsgi.application"
 
-# Database configuration – SQLite for local development
+# Database configuration – Reads DATABASE_URL (Supabase Postgres) with local SQLite fallback
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 
