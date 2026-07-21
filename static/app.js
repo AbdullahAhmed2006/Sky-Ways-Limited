@@ -1007,8 +1007,6 @@ function routeTo(hash) {
         }
     });
 
-    refreshUILayout();
-
     document.querySelectorAll("aside nav a, nav a").forEach(link => {
         const href = link.getAttribute("href");
         if (href === `#${sectionId}`) {
@@ -1017,6 +1015,8 @@ function routeTo(hash) {
             link.className = "flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/10 px-4 py-3 border-l-4 border-transparent rounded-r-lg transition-colors";
         }
     });
+
+    refreshUILayout();
 
     // Update Topbar Title & Subtitle based on active view and role
     const titleEl = document.getElementById("topbar-title");
