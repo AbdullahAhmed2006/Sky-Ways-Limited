@@ -827,10 +827,33 @@ async function initApp() {
     }
 }
 
+function refreshUILayout() {
+    const role = state.userRole || "passenger";
+    const isPassenger = (role === "passenger");
+
+    const navDashboard = document.getElementById("nav-dashboard");
+    const navVehicles = document.getElementById("nav-vehicles");
+    const navDrivers = document.getElementById("nav-drivers");
+    const navAnalytics = document.getElementById("nav-analytics");
+
+    if (isPassenger) {
+        if (navDashboard) navDashboard.classList.add("hidden");
+        if (navVehicles) navVehicles.classList.add("hidden");
+        if (navDrivers) navDrivers.classList.add("hidden");
+        if (navAnalytics) navAnalytics.classList.add("hidden");
+    } else {
+        if (navDashboard) navDashboard.classList.remove("hidden");
+        if (navVehicles) navVehicles.classList.remove("hidden");
+        if (navDrivers) navDrivers.classList.remove("hidden");
+        if (navAnalytics) navAnalytics.classList.remove("hidden");
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     initApp().then(() => {
         let defaultHash = "#dashboard";
         if (state.userRole === "driver") defaultHash = "#drivers";
+        else if (state.userRole === "passenger") defaultHash = "#booking";
         routeTo(window.location.hash || defaultHash);
     });
     
@@ -952,14 +975,14 @@ function routeTo(hash) {
     if (role === "admin" || role === "dispatcher") {
         allowed = ["dashboard", "vehicles", "drivers", "routes", "analytics", "support", "settings"];
     } else if (role === "passenger") {
-        allowed = ["dashboard", "routes", "booking", "tickets", "support", "settings"];
+        allowed = ["booking", "tickets", "routes", "support", "settings"];
     } else if (role === "driver") {
         allowed = ["dashboard", "vehicles", "drivers", "routes", "support", "settings"];
     }
 
     if (!allowed.includes(sectionId)) {
         console.warn(`Unauthorized section attempt: ${sectionId} for role: ${role}`);
-        routeTo(allowed[0] || "dashboard");
+        routeTo(allowed[0] || "booking");
         return;
     }
 
@@ -6123,6 +6146,8 @@ window.handleAuthLogin = async function(event) {
             // Hide Auth Overlay
             const overlay = document.getElementById('auth-overlay');
             if (overlay) overlay.classList.add('hidden');
+
+            refreshUILayout();
 
             showToast(`Welcome back, ${username}! Login successful.`, "success");
             await fetchBackendData();
